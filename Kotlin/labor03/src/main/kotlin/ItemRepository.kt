@@ -3,6 +3,7 @@ import java.io.File
 class ItemRepository {
     private val items =  mutableListOf<Item>()
 
+    // read items from file and add them to the list
     init {
         val file = File("questions.txt")
         val lines = file.readLines()

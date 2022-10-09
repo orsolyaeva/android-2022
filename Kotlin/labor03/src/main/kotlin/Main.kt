@@ -1,5 +1,5 @@
 fun main() {
-    ItemController().quiz(10)
+    ItemController().quiz(5)
 }
 
 
