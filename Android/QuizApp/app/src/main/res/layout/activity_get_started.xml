@@ -52,13 +52,16 @@
         android:layout_width="186dp"
         android:layout_height="54dp"
         android:layout_marginStart="112dp"
-        android:layout_marginTop="36dp"
+        android:layout_marginTop="34dp"
         android:layout_marginEnd="113dp"
+        android:layout_marginBottom="104dp"
         android:text="Select photo"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/takePhotoButton" />
+        app:layout_constraintTop_toBottomOf="@+id/takePhotoButton"
+        app:layout_constraintVertical_bias="0.0" />
 
     <Button
         android:id="@+id/takePhotoButton"

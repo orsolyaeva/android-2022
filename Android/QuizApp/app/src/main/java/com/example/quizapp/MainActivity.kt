@@ -63,6 +63,7 @@ class MainActivity : AppCompatActivity() {
 
         val userName = findViewById<EditText>(R.id.userName).text.toString()
         val userAge = findViewById<EditText>(R.id.userAge).text.toString()
+        val userAvatar = findViewById<ImageView>(R.id.userAvatar).drawable.toString()
 
 //        val text = "You pressed the button!"
 //        val toast = Toast.makeText(applicationContext, text, Toast.LENGTH_SHORT)

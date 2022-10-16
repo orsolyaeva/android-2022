@@ -1,18 +1,22 @@
 package com.example.quizapp
 
+import android.annotation.SuppressLint
+import android.content.ActivityNotFoundException
+import android.content.Intent
+import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
-import android.os.Environment
+import android.provider.MediaStore
+import android.util.Log
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.FileProvider
-import androidx.lifecycle.lifecycleScope
-import java.io.File
+import androidx.core.net.toUri
 
 class GetStartedActivity : AppCompatActivity() {
+    private val REQUEST_IMAGE_CAPTURE = 1
 
     private val getImage =
         registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
@@ -21,17 +25,6 @@ class GetStartedActivity : AppCompatActivity() {
                 userPicture.setImageURI(it)
             }
         }
-
-    private val takeImage = registerForActivityResult(ActivityResultContracts.TakePicture()) { success ->
-        if (success) {
-            latestTmpUri?.let { uri ->
-                val userPicture = findViewById<ImageView>(R.id.userPicture)
-                userPicture.setImageURI(uri)
-            }
-        }
-    }
-
-    private var latestTmpUri: Uri? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,25 +42,30 @@ class GetStartedActivity : AppCompatActivity() {
 
         val takePhotoButton = findViewById<Button>(R.id.takePhotoButton)
         takePhotoButton.setOnClickListener {
-           takeImage()
+            dispatchTakePictureIntent()
         }
     }
 
-    private fun takeImage() {
-        lifecycleScope.launchWhenStarted {
-            getTmpFileUri().let { uri ->
-                latestTmpUri = uri
-                takeImage.launch(uri)
-            }
+    @SuppressLint("QueryPermissionsNeeded")
+    private fun dispatchTakePictureIntent() {
+        val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        try {
+            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE)
+        } catch (e: ActivityNotFoundException) {
+            // display error state to the user
+            Log.d("GetStartedActivity", "Error: $e")
         }
+
     }
 
-    private fun getTmpFileUri(): Uri {
-        val tmpFile = File.createTempFile("tmp_image_file", ".png", cacheDir).apply {
-            createNewFile()
-            deleteOnExit()
-        }
+    @Deprecated("Deprecated in Java")
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
 
-        return FileProvider.getUriForFile(applicationContext, "${BuildConfig.APPLICATION_ID}.provider", tmpFile)
+        if(requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+            val imageBitmap = data?.extras?.get("data") as Bitmap
+            val userPicture = findViewById<ImageView>(R.id.userPicture)
+            userPicture.setImageBitmap(imageBitmap)
+        }
     }
 }
