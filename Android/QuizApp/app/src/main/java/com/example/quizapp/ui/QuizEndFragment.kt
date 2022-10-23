@@ -20,12 +20,16 @@ import com.example.quizapp.quiz.QuizViewModel
  * Use the [QuizEndFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
+
 class QuizEndFragment : Fragment() {
 
     private lateinit var binding: FragmentQuizEndBinding
     private lateinit var viewModel: QuizViewModel
     private lateinit var scoreText : TextView
     private lateinit var tryAgainButton : Button
+    private lateinit var correctNumber: TextView
+    private lateinit var incorrectNumber: TextView
+    private lateinit var partiallyCorrectNumber: TextView
 
     @SuppressLint("SetTextI18n")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -33,6 +37,9 @@ class QuizEndFragment : Fragment() {
         initViews()
         initListeners()
         scoreText.text = "${viewModel.getScore()} / ${viewModel.getNumberOfQuestions()} points"
+        correctNumber.text = "Correct answers: ${viewModel.getCorrectAnswers()}"
+        incorrectNumber.text = "Incorrect answers: ${viewModel.getIncorrectAnswers()}"
+        partiallyCorrectNumber.text = "Partially correct answers: ${viewModel.getPartiallyCorrectAnswers()}"
     }
 
     override fun onCreateView(
@@ -47,6 +54,9 @@ class QuizEndFragment : Fragment() {
     private fun initViews() {
         scoreText = binding.scoreText
         tryAgainButton = binding.tryAgainButton
+        correctNumber = binding.correctNumber
+        incorrectNumber = binding.wrongNumber
+        partiallyCorrectNumber = binding.partiallyCorrectNumber
     }
 
     private fun initListeners() {

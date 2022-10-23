@@ -9,19 +9,17 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.EditText
-import android.widget.RadioButton
-import android.widget.RadioGroup
-import android.widget.RelativeLayout
-import android.widget.TextView
+import android.widget.*
 import androidx.activity.OnBackPressedCallback
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.quizapp.R
 import com.example.quizapp.databinding.FragmentQuestionBinding
+import com.example.quizapp.quiz.Item
+import com.example.quizapp.quiz.QuestionType
 import com.example.quizapp.quiz.QuizViewModel
+import kotlinx.coroutines.handleCoroutineException
 
 
 /**
@@ -35,6 +33,8 @@ class QuestionFragment : Fragment() {
     private lateinit var questionText : TextView
     private lateinit var nextButton : Button
     private lateinit var radioGroup : RadioGroup
+    private lateinit var spinner : Spinner
+    private var userAnswers = mutableListOf<Int>()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -62,38 +62,21 @@ class QuestionFragment : Fragment() {
 
         viewModel.currentQuestion.observe(requireActivity()) { (question, isLast) ->
             binding.questionText.text = question?.question
-            val numberAnswers = question?.answers?.size ?: 0
 
-            radioGroup = RadioGroup(requireContext())
-            val params = ConstraintLayout.LayoutParams(
-                ConstraintLayout.LayoutParams.MATCH_PARENT,
-                ConstraintLayout.LayoutParams.WRAP_CONTENT
-            )
-
-            params.topToBottom = R.id.questionText
-            params.startToStart = R.id.questionText
-            params.endToEnd = R.id.questionText
-            params.bottomToTop = R.id.nextQuestionButton
-            radioGroup.layoutParams = params
-
-            for (i in 0 until numberAnswers) {
-                val answerButton = RadioButton(requireContext())
-                answerButton.layoutParams = ViewGroup.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.WRAP_CONTENT
-                )
-                answerButton.text = question?.answers?.get(i)
-                answerButton.id = i
-
-                radioGroup.addView(answerButton)
+            when(question?.type) {
+                QuestionType.SPINNER.ordinal -> {
+                    handleSpinner(question)
+                }
+                else -> {
+                    handleSingleMultipleChoice(question)
+                }
             }
-
-            binding.questionLayout.addView(radioGroup)
 
             if(isLast) {
                 nextButton.text = "Submit"
                 nextButton.setOnClickListener {
-                    viewModel.checkAnswer(radioGroup.checkedRadioButtonId)
+                    question?.type?.let { it1 -> collectAnswers(it1) }
+                    viewModel.checkAnswer(userAnswers)
                     findNavController().navigate(R.id.action_questionFragment_to_quizEndFragment)
                 }
             }
@@ -102,23 +85,110 @@ class QuestionFragment : Fragment() {
         return binding.root
     }
 
+    private fun handleSpinner(question: Item?) {
+        spinner = Spinner(requireContext())
+        val spinnerParams = ConstraintLayout.LayoutParams(
+            ConstraintLayout.LayoutParams.MATCH_PARENT,
+            ConstraintLayout.LayoutParams.WRAP_CONTENT
+        )
+        spinnerParams.bottomToTop = R.id.nextQuestionButton
+        spinnerParams.topToBottom = R.id.questionText
+        spinnerParams.setMargins(30, 0, 30, 200)
+        spinner.layoutParams = spinnerParams
+        val answers : MutableList<String> = question?.answers?.toMutableList() ?: mutableListOf()
+        val arrayAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, answers)
+        arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        spinner.adapter = arrayAdapter
+        binding.questionLayout.addView(spinner)
+    }
+
+    private fun handleSingleMultipleChoice(question: Item?) {
+        val numberOptions = question?.answers?.size ?: 0
+
+        radioGroup = RadioGroup(requireContext())
+        val params = ConstraintLayout.LayoutParams(
+            ConstraintLayout.LayoutParams.MATCH_PARENT,
+            ConstraintLayout.LayoutParams.WRAP_CONTENT
+        )
+
+        params.topToBottom = R.id.questionText
+        params.startToStart = R.id.questionText
+        params.endToEnd = R.id.questionText
+        params.bottomToTop = R.id.nextQuestionButton
+        radioGroup.layoutParams = params
+
+        if (question?.type == QuestionType.SINGLE_CHOICE.ordinal) {
+            for (i in 0 until numberOptions) {
+                val radioButton = RadioButton(requireContext())
+                radioButton.text = question.answers[i]
+                radioButton.setPadding(30, 30, 30, 30)
+                radioButton.id = i
+                radioGroup.addView(radioButton)
+            }
+        } else {
+            for (i in 0 until numberOptions) {
+                val checkBox = CheckBox(requireContext())
+                checkBox.text = question?.answers?.get(i)
+                checkBox.setPadding(30, 30, 30, 30)
+                checkBox.id = i
+                radioGroup.addView(checkBox)
+            }
+        }
+
+        binding.questionLayout.addView(radioGroup)
+    }
+
     private fun initViews() {
         Log.d("QuestionFragment", "initViews: ")
         questionText = binding.questionText
         nextButton = binding.nextQuestionButton
     }
 
+    private fun collectAnswers(questionType: Int): Boolean {
+        userAnswers.clear()
+        when(questionType) {
+            QuestionType.SINGLE_CHOICE.ordinal -> {
+                val selectedAnswer = radioGroup.checkedRadioButtonId
+                if (selectedAnswer == -1) {
+                    return false
+                }
+
+                userAnswers.add(radioGroup.checkedRadioButtonId)
+                return true
+            }
+            QuestionType.MULTIPLE_CHOICE.ordinal -> {
+                for (i in 0 until radioGroup.childCount) {
+                    val checkBox = radioGroup.getChildAt(i) as CheckBox
+                    if (checkBox.isChecked) {
+                        userAnswers.add(checkBox.id)
+                    }
+                }
+
+                return userAnswers.isNotEmpty()
+            }
+            QuestionType.SPINNER.ordinal -> {
+                userAnswers.add(spinner.selectedItemPosition)
+                return true
+            }
+            else -> {}
+        }
+        return true
+    }
+
     private fun initListeners() {
         Log.d("QuestionFragment", "initListeners: ")
         nextButton.setOnClickListener {
-            val selectedAnswer = radioGroup.checkedRadioButtonId
-
-            if(selectedAnswer == -1) {
+            if(viewModel.currentQuestion.value?.first?.type?.let { it1 -> collectAnswers(it1) } == false) {
                 return@setOnClickListener
             }
 
-            viewModel.checkAnswer(selectedAnswer)
-            binding.questionLayout.removeView(radioGroup)
+            viewModel.checkAnswer(userAnswers)
+            if (viewModel.currentQuestion.value?.first?.type == QuestionType.SPINNER.ordinal) {
+                binding.questionLayout.removeView(spinner)
+            } else {
+                binding.questionLayout.removeView(radioGroup)
+            }
+
             viewModel.getNextQuestion()
         }
     }
@@ -132,7 +202,8 @@ class QuestionFragment : Fragment() {
                 builder.setTitle("Exit")
                 builder.setMessage("Are you sure you want to end the quiz?")
                 builder.setPositiveButton("Yes") { _, _ ->
-                    viewModel.checkAnswer(radioGroup.checkedRadioButtonId)
+                    collectAnswers(viewModel.currentQuestion.value?.first?.type ?: 0)
+                    viewModel.checkAnswer(userAnswers)
                     findNavController().navigate(R.id.action_questionFragment_to_quizEndFragment)
                 }
                 builder.setNegativeButton("No") { _, _ -> }
