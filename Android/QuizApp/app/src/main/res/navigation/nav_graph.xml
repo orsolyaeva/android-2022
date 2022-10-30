@@ -54,4 +54,22 @@
         android:name="com.example.quizapp.fragments.ProfileFragment"
         android:label="fragment_profile"
         tools:layout="@layout/fragment_profile" />
+    <fragment
+        android:id="@+id/questionListFragment"
+        android:name="com.example.quizapp.fragments.QuestionListFragment"
+        android:label="fragment_question_list"
+        tools:layout="@layout/fragment_question_list" >
+        <action
+            android:id="@+id/action_questionListFragment_to_questionDetailFragment"
+            app:destination="@id/questionDetailFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/questionDetailFragment"
+        android:name="com.example.quizapp.fragments.QuestionDetailFragment"
+        android:label="fragment_question_detail"
+        tools:layout="@layout/fragment_question_detail" >
+        <action
+            android:id="@+id/action_questionDetailFragment_to_questionListFragment"
+            app:destination="@id/questionListFragment" />
+    </fragment>
 </navigation>

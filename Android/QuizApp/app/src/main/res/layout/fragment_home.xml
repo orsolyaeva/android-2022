@@ -39,11 +39,10 @@
         android:id="@+id/readQuestionsButton"
         android:layout_width="186dp"
         android:layout_height="47dp"
+        android:layout_marginTop="20dp"
         android:text="@string/read_questions"
-        app:layout_constraintBottom_toTopOf="@+id/createQuestionButton"
-        app:layout_constraintEnd_toEndOf="@+id/createQuestionButton"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="@+id/createQuestionButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/quizStartButton" />
 
     <Button
@@ -61,13 +60,11 @@
         android:id="@+id/createQuestionButton"
         android:layout_width="186dp"
         android:layout_height="47dp"
-        android:layout_marginStart="116dp"
-        android:layout_marginEnd="117dp"
-        android:layout_marginBottom="89dp"
+        android:layout_marginTop="20dp"
         android:text="@string/create_question"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/readQuestionsButton" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline2"

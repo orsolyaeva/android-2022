@@ -1,18 +1,21 @@
 package com.example.quizapp.viewModels
 
 import android.util.Log
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.quizapp.models.Item
 import com.example.quizapp.models.QuestionType
 import com.example.quizapp.services.ItemService
 import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.math.roundToInt
 
 class QuizViewModel: ViewModel() {
     private var numberOfQuestions = 3
     private val itemService = ItemService()
     private var questions = itemService.selectRandomItems(numberOfQuestions)
+    private var questionTemp = MutableLiveData<ArrayList<Item>>()
     private var countCorrect = 0
     private var countPartiallyCorrect = 0
     private var countPartiallyCorrectPoints = 0.0
@@ -26,6 +29,7 @@ class QuizViewModel: ViewModel() {
 
     private fun startQuiz(): MutableList<Item> {
         itemService.randomizeQuestions()
+        questionTemp.value = questions
         return questions
     }
 
@@ -99,6 +103,7 @@ class QuizViewModel: ViewModel() {
         val temp = (1..itemService.getNumberTotalQuestions()).random()
         Log.d("QuizViewModelQ", "temp: $temp")
         questions = itemService.selectRandomItems(temp)
+        questionTemp.value = questions
         numberOfQuestions = questions.size
         Log.d("QuizViewModelQ", "number of questions: $numberOfQuestions")
         itQuestion = startQuiz().iterator()
@@ -107,5 +112,20 @@ class QuizViewModel: ViewModel() {
 
     fun getNumberOfQuestions() : Int {
         return numberOfQuestions
+    }
+
+    fun getAllQuestions() : LiveData<ArrayList<Item>> {
+        questionTemp.value = questions
+        return questionTemp
+    }
+
+    fun addQuestion(item: Item) {
+        itemService.addItem(item)
+        questionTemp.value = questions
+    }
+
+    fun deleteQuestion(position: Int) {
+        itemService.deleteItem(position)
+        questionTemp.value = questions
     }
 }

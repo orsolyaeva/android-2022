@@ -69,6 +69,15 @@ class MainActivity : AppCompatActivity() {
                     }
                     true
                 }
+                R.id.list_question -> {
+                    // get current fragment
+                    val currentFragment = findNavController(R.id.nav_host_fragment).currentDestination?.label
+                    // navigate from current fragment to list question fragment
+                    if (currentFragment != "fragment_list_question") {
+                        findNavController(R.id.nav_host_fragment).navigate(R.id.questionListFragment)
+                    }
+                    true
+                }
                 else -> false
             }
             drawerLayout.closeDrawer(Gravity.LEFT)

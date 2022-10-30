@@ -26,4 +26,12 @@ class ItemRepository {
             println(item)
         }
     }
+
+    fun addItem(item: Item) {
+        items.add(item)
+    }
+
+    fun deleteItem(item: Item) {
+        items.remove(item)
+    }
 }

@@ -5,12 +5,12 @@ import com.example.quizapp.models.Item
 import com.example.quizapp.models.QuestionType
 
 class ItemService(private var itemRepository: ItemRepository) {
-    private var items =  mutableListOf<Item>()
+    private var items =  ArrayList<Item>()
 
     constructor() : this(ItemRepository())
 
     // select a given number of items from the repository
-    fun selectRandomItems(count: Int): MutableList<Item> {
+    fun selectRandomItems(count: Int): ArrayList<Item> {
         items.clear()
         var counter = count
 
@@ -60,5 +60,13 @@ class ItemService(private var itemRepository: ItemRepository) {
 
     fun getNumberTotalQuestions(): Int {
         return itemRepository.size()
+    }
+
+    fun addItem(item: Item) {
+        itemRepository.addItem(item)
+    }
+
+    fun deleteItem(position: Int) {
+        itemRepository.deleteItem(items[position])
     }
 }

@@ -19,6 +19,7 @@
             android:layout_width="419dp"
             android:layout_height="59dp"
             android:layout_marginBottom="547dp"
+            android:background="#6200ED"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -28,11 +29,11 @@
                 android:id="@+id/topAppBar"
                 style="@style/Widget.MaterialComponents.Toolbar.PrimarySurface"
                 android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                android:background="@android:color/transparent"
+                android:layout_height="match_parent"
+                android:background="#00FDD835"
                 android:elevation="0dp"
-                app:logo="@drawable/more"
-                app:navigationIcon="@drawable/more"
+                app:itemIconSize="2dp"
+                app:navigationIcon="@android:drawable/ic_menu_sort_by_size"
                 app:title="Quiz app" />
         </com.google.android.material.appbar.AppBarLayout>
 
@@ -57,6 +58,7 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        app:menu="@menu/navigation_drawer" />
+        app:menu="@menu/navigation_drawer"
+        app:headerLayout="@layout/header_navigation_drawer"/>
 
 </androidx.drawerlayout.widget.DrawerLayout>
