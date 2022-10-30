@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+   <group android:id="@+id/group1"
+       android:checkableBehavior="single">
+       <item
+           android:id="@+id/home"
+           android:icon="@drawable/home__1_"
+           android:title="Home" />
+       <item
+           android:id="@+id/quiz"
+           android:icon="@drawable/ideas"
+           android:title="Quiz Time" />
+       <item
+           android:id="@+id/profile"
+           android:icon="@drawable/user"
+           android:title="Profile" />
+       <item
+           android:id="@+id/list_question"
+           android:icon="@drawable/clipboard"
+           android:title="List of questions" />
+       <item
+           android:id="@+id/new_question"
+           android:icon="@drawable/add"
+           android:title="New question" />
+    </group>
+</menu>

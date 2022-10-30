@@ -3,19 +3,22 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/quizStartFragment">
+    app:startDestination="@id/homeFragment">
     <fragment
         android:id="@+id/quizStartFragment"
-        android:name="com.example.quizapp.ui.QuizStartFragment"
+        android:name="com.example.quizapp.fragments.QuizStartFragment"
         android:label="fragment_quiz_start"
         tools:layout="@layout/fragment_quiz_start" >
         <action
             android:id="@+id/action_quizStartFragment_to_questionFragment"
             app:destination="@id/questionFragment" />
+        <action
+            android:id="@+id/action_quizStartFragment_to_homeFragment"
+            app:destination="@id/homeFragment" />
     </fragment>
     <fragment
         android:id="@+id/questionFragment"
-        android:name="com.example.quizapp.ui.QuestionFragment"
+        android:name="com.example.quizapp.fragments.QuestionFragment"
         android:label="fragment_question"
         tools:layout="@layout/fragment_question" >
         <action
@@ -27,11 +30,28 @@
     </fragment>
     <fragment
         android:id="@+id/quizEndFragment"
-        android:name="com.example.quizapp.ui.QuizEndFragment"
+        android:name="com.example.quizapp.fragments.QuizEndFragment"
         android:label="fragment_quiz_end"
         tools:layout="@layout/fragment_quiz_end" >
         <action
             android:id="@+id/action_quizEndFragment_to_quizStartFragment"
             app:destination="@id/quizStartFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="com.example.quizapp.fragments.HomeFragment"
+        android:label="fragment_home"
+        tools:layout="@layout/fragment_home" >
+        <action
+            android:id="@+id/action_homeFragment_to_quizStartFragment"
+            app:destination="@id/quizStartFragment" />
+        <action
+            android:id="@+id/action_homeFragment_self"
+            app:destination="@id/homeFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="com.example.quizapp.fragments.ProfileFragment"
+        android:label="fragment_profile"
+        tools:layout="@layout/fragment_profile" />
 </navigation>

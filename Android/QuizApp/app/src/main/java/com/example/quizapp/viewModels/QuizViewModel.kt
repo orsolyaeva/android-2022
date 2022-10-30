@@ -1,17 +1,22 @@
-package com.example.quizapp.quiz
+package com.example.quizapp.viewModels
 
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.quizapp.models.Item
+import com.example.quizapp.models.QuestionType
+import com.example.quizapp.services.ItemService
+import java.util.*
 import kotlin.math.roundToInt
 
 class QuizViewModel: ViewModel() {
-    private val numberOfQuestions = 3
-    private var questions = selectRandomItems(numberOfQuestions)
+    private var numberOfQuestions = 3
+    private val itemService = ItemService()
+    private var questions = itemService.selectRandomItems(numberOfQuestions)
     private var countCorrect = 0
     private var countPartiallyCorrect = 0
     private var countPartiallyCorrectPoints = 0.0
-    var itQuestion: MutableIterator<Item> = startQuiz().iterator()
+    private var itQuestion: MutableIterator<Item> = startQuiz().iterator()
     var currentQuestion: MutableLiveData<Pair<Item?, Boolean>> =
         MutableLiveData<Pair<Item?, Boolean>>()
 
@@ -19,57 +24,8 @@ class QuizViewModel: ViewModel() {
         currentQuestion.value = Pair(itQuestion.next(), false)
     }
 
-    private fun selectRandomItems(count: Int) : MutableList<Item> {
-        val itemsO = com.example.quizapp.quiz.items
-        val items = mutableListOf<Item>()
-        var counter = count
-
-        if (count > itemsO.size || count < 0) {
-            counter = itemsO.size
-        }
-
-        while(items.size < counter) {
-            val item = itemsO.random()
-
-            if (!items.contains(item)) {
-                items.add(item)
-            }
-        }
-
-        println(items)
-
-        return items
-    }
-
-    private fun randomizeQuestions() {
-        questions.shuffle()
-
-        for (question in questions) {
-            when(question.type) {
-                QuestionType.SINGLE_CHOICE.ordinal -> {
-                    val answer = question.answers[question.correct[0]]
-                    question.answers.shuffle()
-                    val tempIndex = question.answers.indexOf(answer)
-                    question.correct = mutableListOf(tempIndex)
-                }
-                QuestionType.MULTIPLE_CHOICE.ordinal -> {
-                    val correctAnswers = question.correct.map { question.answers[it] }
-
-                    question.answers.shuffle()
-
-                    val newCorrectAnswers = mutableListOf<Int>()
-                    for (answer in correctAnswers) {
-                        newCorrectAnswers.add(question.answers.indexOf(answer))
-                    }
-
-                    question.correct = newCorrectAnswers
-                }
-            }
-        }
-    }
-
     private fun startQuiz(): MutableList<Item> {
-        randomizeQuestions()
+        itemService.randomizeQuestions()
         return questions
     }
 
@@ -140,7 +96,11 @@ class QuizViewModel: ViewModel() {
         countCorrect = 0
         countPartiallyCorrect = 0
         countPartiallyCorrectPoints = 0.0
-        questions = selectRandomItems(numberOfQuestions)
+        val temp = (1..itemService.getNumberTotalQuestions()).random()
+        Log.d("QuizViewModelQ", "temp: $temp")
+        questions = itemService.selectRandomItems(temp)
+        numberOfQuestions = questions.size
+        Log.d("QuizViewModelQ", "number of questions: $numberOfQuestions")
         itQuestion = startQuiz().iterator()
         currentQuestion.value = Pair(itQuestion.next(), false)
     }

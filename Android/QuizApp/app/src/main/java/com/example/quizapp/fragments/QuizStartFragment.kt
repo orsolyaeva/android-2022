@@ -1,5 +1,6 @@
-package com.example.quizapp.ui
+package com.example.quizapp.fragments
 
+import android.content.Context
 import android.database.Cursor
 import android.net.Uri
 import android.os.Build
@@ -11,14 +12,17 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
-import androidx.navigation.Navigation.findNavController
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.quizapp.R
 import com.example.quizapp.TAG
 import com.example.quizapp.databinding.FragmentQuizStartBinding
+import com.example.quizapp.viewModels.UserViewModel
 import com.google.android.material.snackbar.Snackbar
 
 /**
@@ -33,6 +37,7 @@ class QuizStartFragment : Fragment() {
     private lateinit var imageButton: Button
     private lateinit var userName : EditText
     private lateinit var userAge: EditText
+    private lateinit var userViewModel: UserViewModel
 
     @RequiresApi(Build.VERSION_CODES.O)
     private val getContent = registerForActivityResult(ActivityResultContracts.PickContact()) { uri ->
@@ -68,6 +73,7 @@ class QuizStartFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentQuizStartBinding.inflate(inflater, container, false)
+        userViewModel = ViewModelProvider(requireActivity())[UserViewModel::class.java]
         return binding.root
     }
 
@@ -116,8 +122,29 @@ class QuizStartFragment : Fragment() {
         if (userNameT.isEmpty()) {
             Snackbar.make(binding.root, "Please enter your name", Snackbar.LENGTH_SHORT).show()
         } else {
+//            // if username is not empty, save it to shared preferences
+//            if (userNameT.isNotEmpty()) {
+//                val sharedPref = requireActivity().getPreferences(Context.MODE_PRIVATE)
+//                with (sharedPref.edit()) {
+//                    putString("username", userNameT)
+//                    apply()
+//                }
+//            }
+            if (userViewModel.getName()?.isEmpty() == true) {
+                userViewModel.setName(userNameT)
+            }
             findNavController().navigate(R.id.action_quizStartFragment_to_questionFragment)
 //            Snackbar.make(binding.root, "Welcome $userNameT", Snackbar.LENGTH_SHORT).show()
         }
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        val callback : OnBackPressedCallback = object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+               findNavController().navigate(R.id.action_quizStartFragment_to_homeFragment)
+            }
+        }
+        requireActivity().onBackPressedDispatcher.addCallback(this, callback)
     }
 }

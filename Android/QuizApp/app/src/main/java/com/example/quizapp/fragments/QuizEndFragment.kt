@@ -1,8 +1,7 @@
-package com.example.quizapp.ui
+package com.example.quizapp.fragments
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -13,7 +12,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.quizapp.R
 import com.example.quizapp.databinding.FragmentQuizEndBinding
-import com.example.quizapp.quiz.QuizViewModel
+import com.example.quizapp.viewModels.QuizViewModel
 
 /**
  * A simple [Fragment] subclass.

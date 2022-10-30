@@ -1,4 +1,4 @@
-package com.example.quizapp.ui
+package com.example.quizapp.fragments
 
 import android.annotation.SuppressLint
 import android.app.AlertDialog
@@ -16,10 +16,9 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.quizapp.R
 import com.example.quizapp.databinding.FragmentQuestionBinding
-import com.example.quizapp.quiz.Item
-import com.example.quizapp.quiz.QuestionType
-import com.example.quizapp.quiz.QuizViewModel
-import kotlinx.coroutines.handleCoroutineException
+import com.example.quizapp.models.Item
+import com.example.quizapp.models.QuestionType
+import com.example.quizapp.viewModels.QuizViewModel
 
 
 /**
