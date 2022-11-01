@@ -19,6 +19,7 @@ import com.example.quizapp.databinding.FragmentQuestionBinding
 import com.example.quizapp.models.Item
 import com.example.quizapp.models.QuestionType
 import com.example.quizapp.viewModels.QuizViewModel
+import com.example.quizapp.viewModels.UserViewModel
 
 
 /**
@@ -29,6 +30,7 @@ import com.example.quizapp.viewModels.QuizViewModel
 class QuestionFragment : Fragment() {
     private lateinit var binding: FragmentQuestionBinding
     private lateinit var viewModel: QuizViewModel
+    private lateinit var userViewModel: UserViewModel
     private lateinit var questionText : TextView
     private lateinit var nextButton : Button
     private lateinit var radioGroup : RadioGroup
@@ -45,6 +47,7 @@ class QuestionFragment : Fragment() {
         super.onCreate(savedInstanceState)
         Log.d("QuestionFragment", "onCreate: ")
         viewModel = ViewModelProvider(requireActivity())[QuizViewModel::class.java]
+        userViewModel = ViewModelProvider(requireActivity())[UserViewModel::class.java]
         binding = FragmentQuestionBinding.inflate(layoutInflater)
         initViews()
         initListeners()
@@ -202,6 +205,7 @@ class QuestionFragment : Fragment() {
                 builder.setMessage("Are you sure you want to end the quiz?")
                 builder.setPositiveButton("Yes") { _, _ ->
                     collectAnswers(viewModel.currentQuestion.value?.first?.type ?: 0)
+                    Log.d("QuestionFragment", "handleOnBackPressed: $userAnswers")
                     viewModel.checkAnswer(userAnswers)
                     findNavController().navigate(R.id.action_questionFragment_to_quizEndFragment)
                 }

@@ -1,16 +1,14 @@
 package com.example.quizapp.models
 
-class User(var name: String?, var high_score: Int = 0) {
+class User(var name: String?, var high_score: Double = 0.0) {
     // change the name of the user
     fun changeName(newName: String) {
         name = newName
     }
 
     // change the high score of the user
-    fun changeHighScore(newHighScore: Int) {
-        if (newHighScore > high_score) {
-            high_score = newHighScore
-        }
+    fun changeHighScore(newHighScore: Double) {
+        high_score = newHighScore
     }
 
     // get the name of the user
@@ -20,7 +18,7 @@ class User(var name: String?, var high_score: Int = 0) {
     }
 
     // get the high score of the user
-    fun getHighScore(): Int {
+    fun getHighScore(): Double {
         return high_score
     }
 }

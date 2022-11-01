@@ -16,12 +16,12 @@ import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.quizapp.R
 import com.example.quizapp.TAG
 import com.example.quizapp.databinding.FragmentQuizStartBinding
+import com.example.quizapp.viewModels.QuizViewModel
 import com.example.quizapp.viewModels.UserViewModel
 import com.google.android.material.snackbar.Snackbar
 
@@ -30,6 +30,7 @@ import com.google.android.material.snackbar.Snackbar
  * Use the [QuizStartFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
+
 class QuizStartFragment : Fragment() {
     private lateinit var binding: FragmentQuizStartBinding
     private lateinit var contactButton: Button
@@ -38,6 +39,7 @@ class QuizStartFragment : Fragment() {
     private lateinit var userName : EditText
     private lateinit var userAge: EditText
     private lateinit var userViewModel: UserViewModel
+    private lateinit var viewModel: QuizViewModel
 
     @RequiresApi(Build.VERSION_CODES.O)
     private val getContent = registerForActivityResult(ActivityResultContracts.PickContact()) { uri ->
@@ -61,10 +63,15 @@ class QuizStartFragment : Fragment() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        Log.d("QuizStartFragment", "onViewCreated: ")
         super.onViewCreated(view, savedInstanceState)
 
         initViews()
         initListeners()
+
+        if(userViewModel.getName() != null) {
+            userName.setText(userViewModel.getName())
+        }
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -72,8 +79,13 @@ class QuizStartFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        Log.d("QuizStartFragment", "onCreateView: ")
         binding = FragmentQuizStartBinding.inflate(inflater, container, false)
         userViewModel = ViewModelProvider(requireActivity())[UserViewModel::class.java]
+        viewModel = ViewModelProvider(requireActivity())[QuizViewModel::class.java]
+
+        viewModel.resetQuiz()
+
         return binding.root
     }
 
@@ -130,6 +142,11 @@ class QuizStartFragment : Fragment() {
 //                    apply()
 //                }
 //            }
+            if (userViewModel.getName() != userNameT) {
+                userViewModel.resetHighScore()
+                userViewModel.setName(userNameT)
+            }
+
             if (userViewModel.getName()?.isEmpty() == true) {
                 userViewModel.setName(userNameT)
             }

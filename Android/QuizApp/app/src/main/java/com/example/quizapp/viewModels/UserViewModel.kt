@@ -14,7 +14,7 @@ class UserViewModel : ViewModel() {
     }
 
     // set high score of the user
-    fun setHighScore(highScore: Int) {
+    fun setHighScore(highScore: Double) {
         if(highScore > user.getHighScore()) {
             user.changeHighScore(highScore)
         }
@@ -26,7 +26,11 @@ class UserViewModel : ViewModel() {
     }
 
     // get high score of the user
-    fun getHighScore(): Int {
+    fun getHighScore(): Double {
         return user.getHighScore()
+    }
+
+    fun resetHighScore() {
+        user.changeHighScore(0.0)
     }
 }

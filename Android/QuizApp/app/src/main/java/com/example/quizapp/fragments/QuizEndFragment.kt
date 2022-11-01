@@ -13,6 +13,7 @@ import androidx.navigation.fragment.findNavController
 import com.example.quizapp.R
 import com.example.quizapp.databinding.FragmentQuizEndBinding
 import com.example.quizapp.viewModels.QuizViewModel
+import com.example.quizapp.viewModels.UserViewModel
 
 /**
  * A simple [Fragment] subclass.
@@ -24,6 +25,7 @@ class QuizEndFragment : Fragment() {
 
     private lateinit var binding: FragmentQuizEndBinding
     private lateinit var viewModel: QuizViewModel
+    private lateinit var userViewModel: UserViewModel
     private lateinit var scoreText : TextView
     private lateinit var tryAgainButton : Button
     private lateinit var correctNumber: TextView
@@ -35,6 +37,7 @@ class QuizEndFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         initViews()
         initListeners()
+        userViewModel.setHighScore(viewModel.getScore())
         scoreText.text = "${viewModel.getScore()} / ${viewModel.getNumberOfQuestions()} points"
         correctNumber.text = "Correct answers: ${viewModel.getCorrectAnswers()}"
         incorrectNumber.text = "Incorrect answers: ${viewModel.getIncorrectAnswers()}"
@@ -46,6 +49,7 @@ class QuizEndFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         viewModel = ViewModelProvider(requireActivity())[QuizViewModel::class.java]
+        userViewModel = ViewModelProvider(requireActivity())[UserViewModel::class.java]
         binding = FragmentQuizEndBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -60,6 +64,7 @@ class QuizEndFragment : Fragment() {
 
     private fun initListeners() {
         tryAgainButton.setOnClickListener {
+            userViewModel.setHighScore(viewModel.getScore())
             viewModel.resetQuiz()
             findNavController().navigate(R.id.action_quizEndFragment_to_quizStartFragment)
         }

@@ -15,7 +15,7 @@ class QuizViewModel: ViewModel() {
     private var numberOfQuestions = 3
     private val itemService = ItemService()
     private var questions = itemService.selectRandomItems(numberOfQuestions)
-    private var questionTemp = MutableLiveData<ArrayList<Item>>()
+    private var allQuestions = MutableLiveData<ArrayList<Item>>()
     private var countCorrect = 0
     private var countPartiallyCorrect = 0
     private var countPartiallyCorrectPoints = 0.0
@@ -29,7 +29,6 @@ class QuizViewModel: ViewModel() {
 
     private fun startQuiz(): MutableList<Item> {
         itemService.randomizeQuestions()
-        questionTemp.value = questions
         return questions
     }
 
@@ -42,6 +41,10 @@ class QuizViewModel: ViewModel() {
     fun checkAnswer(answer: MutableList<Int>) {
         Log.d("QuizViewModel", "user answers: $answer")
         Log.d("QuizViewModel", "correct answers: ${currentQuestion.value?.first?.correct}")
+
+        if (answer.isEmpty()) {
+            return
+        }
 
         when(currentQuestion.value?.first?.type) {
             QuestionType.SINGLE_CHOICE.ordinal -> {
@@ -103,7 +106,6 @@ class QuizViewModel: ViewModel() {
         val temp = (1..itemService.getNumberTotalQuestions()).random()
         Log.d("QuizViewModelQ", "temp: $temp")
         questions = itemService.selectRandomItems(temp)
-        questionTemp.value = questions
         numberOfQuestions = questions.size
         Log.d("QuizViewModelQ", "number of questions: $numberOfQuestions")
         itQuestion = startQuiz().iterator()
@@ -115,17 +117,17 @@ class QuizViewModel: ViewModel() {
     }
 
     fun getAllQuestions() : LiveData<ArrayList<Item>> {
-        questionTemp.value = questions
-        return questionTemp
+        allQuestions.value = itemService.getAllItems()
+        return allQuestions
     }
 
     fun addQuestion(item: Item) {
         itemService.addItem(item)
-        questionTemp.value = questions
+        allQuestions.value = itemService.getAllItems()
     }
 
     fun deleteQuestion(position: Int) {
         itemService.deleteItem(position)
-        questionTemp.value = questions
+        allQuestions.value = itemService.getAllItems()
     }
 }

@@ -13,6 +13,7 @@ import com.example.quizapp.databinding.FragmentHomeBinding
 class HomeFragment : Fragment() {
     private lateinit var binding: FragmentHomeBinding
     private lateinit var startQuizButton: Button
+    private lateinit var readQuestionsButton: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,11 +36,16 @@ class HomeFragment : Fragment() {
 
     private fun initViews() {
         startQuizButton = binding.quizStartButton
+        readQuestionsButton = binding.readQuestionsButton
     }
 
     private fun initListeners() {
         startQuizButton.setOnClickListener {
             findNavController().navigate(R.id.action_homeFragment_to_quizStartFragment)
+        }
+
+        readQuestionsButton.setOnClickListener {
+            findNavController().navigate(R.id.action_homeFragment_to_questionListFragment)
         }
     }
 }

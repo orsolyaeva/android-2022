@@ -31,7 +31,11 @@ class ItemRepository {
         items.add(item)
     }
 
-    fun deleteItem(item: Item) {
-        items.remove(item)
+    fun deleteItem(position: Int) {
+        items.remove(items[position])
+    }
+
+    fun getAllItems() : MutableList<Item> {
+        return items
     }
 }

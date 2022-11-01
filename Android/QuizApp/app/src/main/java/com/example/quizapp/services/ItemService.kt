@@ -67,6 +67,10 @@ class ItemService(private var itemRepository: ItemRepository) {
     }
 
     fun deleteItem(position: Int) {
-        itemRepository.deleteItem(items[position])
+        itemRepository.deleteItem(position)
+    }
+
+    fun getAllItems(): ArrayList<Item> {
+        return itemRepository.getAllItems() as ArrayList<Item>
     }
 }

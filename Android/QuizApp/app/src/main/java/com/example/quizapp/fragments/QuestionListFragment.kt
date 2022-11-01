@@ -59,6 +59,8 @@ class QuestionListFragment : Fragment(), DataAdapter.OnItemClickListener, DataAd
     }
 
     override fun onItemDetails(position: Int) {
-        findNavController().navigate(R.id.questionDetailFragment)
+        findNavController().navigate(R.id.questionDetailFragment, Bundle().apply {
+            putInt("id", position)
+        })
     }
 }

@@ -30,7 +30,7 @@ class DataAdapter(
         val questionText: TextView = itemView.findViewById(R.id.questionCardText)
         val answerText: TextView = itemView.findViewById(R.id.cardCorrectAnswer)
         val answerType : TextView = itemView.findViewById(R.id.cardAnswerType)
-        val detailsButton: TextView = itemView.findViewById(R.id.detailsButton)
+        private val detailsButton: TextView = itemView.findViewById(R.id.detailsButton)
         private val deleteButton: TextView = itemView.findViewById(R.id.deleteButton)
 
         init {
@@ -39,6 +39,7 @@ class DataAdapter(
                 val currentPosition = this.adapterPosition
                 deleteListener.onItemDelete(currentPosition)
             }
+
             detailsButton.setOnClickListener {
                 val currentPosition = this.adapterPosition
                 detailsListener.onItemDetails(currentPosition)
