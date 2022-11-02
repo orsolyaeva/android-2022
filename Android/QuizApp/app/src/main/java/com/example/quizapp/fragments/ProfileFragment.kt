@@ -1,16 +1,17 @@
 package com.example.quizapp.fragments
 
 import android.annotation.SuppressLint
+import android.net.Uri
 import android.os.Bundle
-import android.util.Log
-import android.view.KeyEvent
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.TextView
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.ViewModelProvider
 import com.example.quizapp.databinding.FragmentProfileBinding
 import com.example.quizapp.viewModels.UserViewModel
@@ -22,6 +23,15 @@ class ProfileFragment : Fragment() {
     private lateinit var userName : EditText
     private lateinit var highScore : TextView
     private lateinit var saveButton : Button
+    private lateinit var profilePicture: ImageView
+    private lateinit var selectPhotoButton: Button
+
+    private val getImage = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+        uri?.let { it ->
+            profilePicture.setImageURI(it)
+            userViewModel.setProfilePicture(it)
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,6 +53,10 @@ class ProfileFragment : Fragment() {
         initViews()
         initListeners()
 
+        if(userViewModel.getProfilePicture() != null) {
+            profilePicture.setImageURI(userViewModel.getProfilePicture())
+        }
+
         userName.hint = userViewModel.getName()
         highScore.text = userViewModel.getHighScore().toString() + " points"
     }
@@ -51,6 +65,8 @@ class ProfileFragment : Fragment() {
         userName = binding.nameUser
         highScore = binding.highScore
         saveButton = binding.saveButton
+        profilePicture = binding.profilePicture
+        selectPhotoButton = binding.choosePhotoButton
     }
 
     private fun initListeners() {
@@ -62,5 +78,10 @@ class ProfileFragment : Fragment() {
 
             userName.clearFocus()
         }
+
+        selectPhotoButton.setOnClickListener {
+            getImage.launch("image/*")
+        }
     }
+
 }

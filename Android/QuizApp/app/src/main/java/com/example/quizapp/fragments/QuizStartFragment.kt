@@ -58,6 +58,7 @@ class QuizStartFragment : Fragment() {
         uri?.let { it ->
             val userAvatar = binding.userAvatar
             userAvatar.setImageURI(it)
+            userViewModel.setProfilePicture(it)
         }
     }
 

@@ -1,12 +1,14 @@
 package com.example.quizapp
 
 import android.annotation.SuppressLint
+import android.app.AlertDialog
 import  androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.Gravity
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.navigation.NavigationView
 
@@ -40,54 +42,52 @@ class MainActivity : AppCompatActivity() {
 
         navigationView.setNavigationItemSelectedListener { menuItem ->
             menuItem.isChecked = true
+            val currentFragment = findNavController(R.id.nav_host_fragment).currentDestination?.label
+
+            if (currentFragment == "fragment_question") {
+                val builder = AlertDialog.Builder(this)
+                builder.setTitle("Are you sure?")
+                builder.setMessage("You will lose your progress")
+                builder.setPositiveButton("Yes") { _, _ ->
+                    navigationView.menu.findItem(R.id.quiz).isChecked = true
+                    findNavController(R.id.nav_host_fragment).navigate(R.id.action_questionFragment_to_quizEndFragment)
+                }
+                builder.setNegativeButton("No") { _, _ ->
+                    navigationView.menu.findItem(R.id.quiz).isChecked = true
+                }
+                builder.show()
+
+                drawerLayout.closeDrawers()
+
+                return@setNavigationItemSelectedListener true
+            }
+
             when (menuItem.itemId) {
                 R.id.home -> {
-                    // get current fragment
-                    val currentFragment = findNavController(R.id.nav_host_fragment).currentDestination?.label
-                    // navigate from current fragment to home fragment
-                    if (currentFragment != "fragment_home") {
+                     if (currentFragment != "fragment_home") {
                         findNavController(R.id.nav_host_fragment).navigate(R.id.homeFragment)
                     }
-                    true
                 }
                 R.id.quiz -> {
-                    // get current fragment
-                    val currentFragment = findNavController(R.id.nav_host_fragment).currentDestination?.label
-                    Log.d("MainActivity", "currentFragment: $currentFragment")
-                    // navigate from current fragment to quiz fragment
                     if (currentFragment != "fragment_quiz_start") {
                         findNavController(R.id.nav_host_fragment).navigate(R.id.quizStartFragment)
                     }
-                    true
                 }
                 R.id.profile -> {
-                    // get current fragment
-                    val currentFragment = findNavController(R.id.nav_host_fragment).currentDestination?.label
-                    // navigate from current fragment to profile fragment
                     if (currentFragment != "fragment_profile") {
                         findNavController(R.id.nav_host_fragment).navigate(R.id.profileFragment)
                     }
-                    true
                 }
                 R.id.list_question -> {
-                    // get current fragment
-                    val currentFragment = findNavController(R.id.nav_host_fragment).currentDestination?.label
-                    // navigate from current fragment to list question fragment
                     if (currentFragment != "fragment_list_question") {
                         findNavController(R.id.nav_host_fragment).navigate(R.id.questionListFragment)
                     }
-                    true
                 }
                 R.id.new_question -> {
-                    // get current fragment
-                    val currentFragment = findNavController(R.id.nav_host_fragment).currentDestination?.label
-                    // navigate from current fragment to new question fragment
-                    if (currentFragment != "fragment_question_add") {
+                     if (currentFragment != "fragment_question_add") {
                         findNavController(R.id.nav_host_fragment).navigate(R.id.questionAddFragment)
                     }
-                    true
                 }
-                else -> false
             }
             drawerLayout.closeDrawer(Gravity.LEFT)
             true

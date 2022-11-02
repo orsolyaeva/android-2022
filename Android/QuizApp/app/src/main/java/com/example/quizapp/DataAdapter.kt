@@ -1,5 +1,8 @@
 package com.example.quizapp
 
+import android.annotation.SuppressLint
+import android.app.AlertDialog
+import android.graphics.Color
 import com.example.quizapp.models.Item
 import android.view.LayoutInflater
 import android.view.View
@@ -37,7 +40,14 @@ class DataAdapter(
             itemView.setOnClickListener(this)
             deleteButton.setOnClickListener {
                 val currentPosition = this.adapterPosition
-                deleteListener.onItemDelete(currentPosition)
+                val builder = AlertDialog.Builder(itemView.context)
+                builder.setTitle("Delete Question")
+                builder.setMessage("Are you sure you want to delete the question?")
+                builder.setPositiveButton("Yes") { _, _ ->
+                    deleteListener.onItemDelete(currentPosition)
+                }
+                builder.setNegativeButton("No") { _, _ -> }
+                builder.show()
             }
 
             detailsButton.setOnClickListener {
@@ -57,10 +67,15 @@ class DataAdapter(
         return DataViewHolder(itemView)
     }
 
+    @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(holder: DataViewHolder, position: Int) {
         val currentItem = list[position]
         holder.questionText.text = currentItem.question
+        if (holder.questionText.text.length > 50) {
+            holder.questionText.text = holder.questionText.text.subSequence(0, 40).toString() + "..."
+        }
         holder.answerText.text = currentItem.answers[0]
+        holder.answerText.setTextColor(Color.parseColor("#3e9657"))
         when(currentItem.type) {
             QuestionType.MULTIPLE_CHOICE.ordinal -> holder.answerType.text = "Multiple Choice"
             QuestionType.SINGLE_CHOICE.ordinal -> holder.answerType.text = "Single choice"
