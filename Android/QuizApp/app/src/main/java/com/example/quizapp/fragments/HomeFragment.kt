@@ -14,6 +14,7 @@ class HomeFragment : Fragment() {
     private lateinit var binding: FragmentHomeBinding
     private lateinit var startQuizButton: Button
     private lateinit var readQuestionsButton: Button
+    private lateinit var addQuestionButton: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,6 +38,7 @@ class HomeFragment : Fragment() {
     private fun initViews() {
         startQuizButton = binding.quizStartButton
         readQuestionsButton = binding.readQuestionsButton
+        addQuestionButton = binding.createQuestionButton
     }
 
     private fun initListeners() {
@@ -46,6 +48,10 @@ class HomeFragment : Fragment() {
 
         readQuestionsButton.setOnClickListener {
             findNavController().navigate(R.id.action_homeFragment_to_questionListFragment)
+        }
+
+        addQuestionButton.setOnClickListener {
+            findNavController().navigate(R.id.action_homeFragment_to_questionAddFragment)
         }
     }
 }

@@ -78,6 +78,15 @@ class MainActivity : AppCompatActivity() {
                     }
                     true
                 }
+                R.id.new_question -> {
+                    // get current fragment
+                    val currentFragment = findNavController(R.id.nav_host_fragment).currentDestination?.label
+                    // navigate from current fragment to new question fragment
+                    if (currentFragment != "fragment_question_add") {
+                        findNavController(R.id.nav_host_fragment).navigate(R.id.questionAddFragment)
+                    }
+                    true
+                }
                 else -> false
             }
             drawerLayout.closeDrawer(Gravity.LEFT)
