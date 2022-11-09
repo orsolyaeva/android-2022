@@ -1,6 +1,8 @@
 package com.example.quizapp.fragments
 
 import android.annotation.SuppressLint
+import android.content.Context
+import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -19,17 +21,17 @@ import com.google.android.material.snackbar.Snackbar
 
 class ProfileFragment : Fragment() {
     private lateinit var binding: FragmentProfileBinding
-    private lateinit var userViewModel: UserViewModel
     private lateinit var userName : EditText
     private lateinit var highScore : TextView
     private lateinit var saveButton : Button
     private lateinit var profilePicture: ImageView
     private lateinit var selectPhotoButton: Button
+    private lateinit var sharedPref : SharedPreferences
 
     private val getImage = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
         uri?.let { it ->
             profilePicture.setImageURI(it)
-            userViewModel.setProfilePicture(it)
+            sharedPref.edit().putString("profilePicture", it.toString()).apply()
         }
     }
 
@@ -42,7 +44,7 @@ class ProfileFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentProfileBinding.inflate(inflater, container, false)
-        userViewModel = ViewModelProvider(requireActivity())[UserViewModel::class.java]
+        sharedPref = requireActivity().getPreferences(Context.MODE_PRIVATE)
         return binding.root
     }
 
@@ -53,12 +55,12 @@ class ProfileFragment : Fragment() {
         initViews()
         initListeners()
 
-        if(userViewModel.getProfilePicture() != null) {
-            profilePicture.setImageURI(userViewModel.getProfilePicture())
+        if (sharedPref.contains("profilePicture")) {
+            profilePicture.setImageURI(Uri.parse(sharedPref.getString("profilePicture", "")))
         }
 
-        userName.hint = userViewModel.getName()
-        highScore.text = userViewModel.getHighScore().toString() + " points"
+        userName.hint = sharedPref.getString("username", "Enter your name")
+        highScore.text = sharedPref.getFloat("highScore", 0.0F).toString()
     }
 
     private fun initViews() {
@@ -71,7 +73,7 @@ class ProfileFragment : Fragment() {
 
     private fun initListeners() {
         saveButton.setOnClickListener {
-            userViewModel.setName(userName.text.toString())
+            sharedPref.edit().putString("username", userName.text.toString()).apply()
             userName.hint = userName.text.toString()
 
             Snackbar.make(binding.root, "Changes saved", Snackbar.LENGTH_SHORT).show()

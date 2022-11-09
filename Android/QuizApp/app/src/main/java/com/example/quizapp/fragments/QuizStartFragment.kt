@@ -1,6 +1,7 @@
 package com.example.quizapp.fragments
 
 import android.content.Context
+import android.content.SharedPreferences
 import android.database.Cursor
 import android.net.Uri
 import android.os.Build
@@ -22,7 +23,6 @@ import com.example.quizapp.R
 import com.example.quizapp.TAG
 import com.example.quizapp.databinding.FragmentQuizStartBinding
 import com.example.quizapp.viewModels.QuizViewModel
-import com.example.quizapp.viewModels.UserViewModel
 import com.google.android.material.snackbar.Snackbar
 
 /**
@@ -38,8 +38,8 @@ class QuizStartFragment : Fragment() {
     private lateinit var imageButton: Button
     private lateinit var userName : EditText
     private lateinit var userAge: EditText
-    private lateinit var userViewModel: UserViewModel
     private lateinit var viewModel: QuizViewModel
+    private lateinit var sharedPref: SharedPreferences
 
     @RequiresApi(Build.VERSION_CODES.O)
     private val getContent = registerForActivityResult(ActivityResultContracts.PickContact()) { uri ->
@@ -58,7 +58,8 @@ class QuizStartFragment : Fragment() {
         uri?.let { it ->
             val userAvatar = binding.userAvatar
             userAvatar.setImageURI(it)
-            userViewModel.setProfilePicture(it)
+
+            sharedPref.edit().putString("profilePicture", it.toString()).apply()
         }
     }
 
@@ -70,8 +71,8 @@ class QuizStartFragment : Fragment() {
         initViews()
         initListeners()
 
-        if(userViewModel.getName() != null) {
-            userName.setText(userViewModel.getName())
+        if (sharedPref.contains("username")) {
+            userName.setText(sharedPref.getString("username", ""))
         }
     }
 
@@ -82,7 +83,7 @@ class QuizStartFragment : Fragment() {
     ): View {
         Log.d("QuizStartFragment", "onCreateView: ")
         binding = FragmentQuizStartBinding.inflate(inflater, container, false)
-        userViewModel = ViewModelProvider(requireActivity())[UserViewModel::class.java]
+        sharedPref = requireActivity().getPreferences(Context.MODE_PRIVATE)
         viewModel = ViewModelProvider(requireActivity())[QuizViewModel::class.java]
 
         viewModel.resetQuiz()
@@ -135,24 +136,26 @@ class QuizStartFragment : Fragment() {
         if (userNameT.isEmpty()) {
             Snackbar.make(binding.root, "Please enter your name", Snackbar.LENGTH_SHORT).show()
         } else {
-//            // if username is not empty, save it to shared preferences
-//            if (userNameT.isNotEmpty()) {
-//                val sharedPref = requireActivity().getPreferences(Context.MODE_PRIVATE)
-//                with (sharedPref.edit()) {
-//                    putString("username", userNameT)
-//                    apply()
-//                }
-//            }
-            if (userViewModel.getName() != userNameT) {
-                userViewModel.resetHighScore()
-                userViewModel.setName(userNameT)
+            // get username from shared preferences
+            val username = sharedPref.getString("username", null)
+
+            if (username != userNameT) {
+                with (sharedPref.edit()) {
+                    putFloat("highScore", 0.0F)
+                    putString("username", userNameT)
+                    apply()
+                }
             }
 
-            if (userViewModel.getName()?.isEmpty() == true) {
-                userViewModel.setName(userNameT)
+            // check if username is empty from shared preferences
+            if (sharedPref.getString("username", null) == null) {
+                // save username to shared preferences
+                with (sharedPref.edit()) {
+                    putString("username", userNameT)
+                    apply()
+                }
             }
             findNavController().navigate(R.id.action_quizStartFragment_to_questionFragment)
-//            Snackbar.make(binding.root, "Welcome $userNameT", Snackbar.LENGTH_SHORT).show()
         }
     }
 

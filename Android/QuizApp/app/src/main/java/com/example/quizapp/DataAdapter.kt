@@ -62,11 +62,13 @@ class DataAdapter(
         }
     }
 
+    // onCreateViewHolder is called when the RecyclerView needs a new ViewHolder of the given type to represent an item.
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DataViewHolder {
         val itemView = LayoutInflater.from(parent.context).inflate(R.layout.question_card, parent, false)
         return DataViewHolder(itemView)
     }
 
+    // onBindViewHolder is called by the RecyclerView to display the data at the specified position.
     @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(holder: DataViewHolder, position: Int) {
         val currentItem = list[position]

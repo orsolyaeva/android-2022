@@ -3,6 +3,7 @@ package com.example.quizapp.fragments
 import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.Context
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -30,11 +31,11 @@ import com.example.quizapp.viewModels.UserViewModel
 class QuestionFragment : Fragment() {
     private lateinit var binding: FragmentQuestionBinding
     private lateinit var viewModel: QuizViewModel
-    private lateinit var userViewModel: UserViewModel
     private lateinit var questionText : TextView
     private lateinit var nextButton : Button
     private lateinit var radioGroup : RadioGroup
     private lateinit var spinner : Spinner
+    private lateinit var sharedPref : SharedPreferences
     private var userAnswers = mutableListOf<Int>()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -47,7 +48,7 @@ class QuestionFragment : Fragment() {
         super.onCreate(savedInstanceState)
         Log.d("QuestionFragment", "onCreate: ")
         viewModel = ViewModelProvider(requireActivity())[QuizViewModel::class.java]
-        userViewModel = ViewModelProvider(requireActivity())[UserViewModel::class.java]
+        sharedPref = requireActivity().getPreferences(Context.MODE_PRIVATE)
         binding = FragmentQuestionBinding.inflate(layoutInflater)
         initViews()
         initListeners()
