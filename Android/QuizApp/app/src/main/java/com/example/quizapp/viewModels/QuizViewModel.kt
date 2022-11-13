@@ -4,10 +4,12 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.quizapp.models.Item
 import com.example.quizapp.models.QuestionType
 import com.example.quizapp.services.ItemService
-import java.util.*
+import com.example.quizapp.services.RetrofitService
+import kotlinx.coroutines.launch
 import kotlin.collections.ArrayList
 import kotlin.math.roundToInt
 
@@ -24,11 +26,15 @@ class QuizViewModel: ViewModel() {
         MutableLiveData<Pair<Item?, Boolean>>()
 
     init {
+        val temp = getQuestionFromAPI() as ArrayList<Item>
+        Log.d("QuizViewModel",  temp.toString())
+
         currentQuestion.value = Pair(itQuestion.next(), false)
     }
 
     private fun startQuiz(): MutableList<Item> {
         itemService.randomizeQuestions()
+
         return questions
     }
 
@@ -48,7 +54,6 @@ class QuizViewModel: ViewModel() {
 
         when(currentQuestion.value?.first?.type) {
             QuestionType.SINGLE_CHOICE.ordinal -> {
-                // get answer[0] text
                 val userAnswer = currentQuestion.value?.first?.answers?.get(answer[0])
                 if (userAnswer == currentQuestion.value?.first?.correct?.get(0)) {
                     countCorrect++
@@ -136,5 +141,33 @@ class QuizViewModel: ViewModel() {
     fun deleteQuestion(position: Int) {
         itemService.deleteItem(position)
         allQuestions.value = itemService.getAllItems()
+    }
+
+    private fun getQuestionFromAPI(): MutableList<Item> {
+        var items = mutableListOf<Item>()
+        viewModelScope.launch {
+            try {
+                Log.d("RESULT_RETRO", "Started loading questions")
+                val response =  RetrofitService.api.getQuestions(3);
+                Log.d("RESULT_RETRO", "Finished loading questions")
+                if (response.isSuccessful) {
+                    val questions = response.body()
+                    items = (questions?.results?.map {
+                        Item(
+                            0,
+                            it.question,
+                            mutableListOf(it.correctAnswer),
+                            mutableListOf(it.correctAnswer).plus(it.incorrectAnswers) as MutableList<String>
+                        )
+                    } as MutableList<Item>?)!!
+
+                    Log.d("RESULT_RETRO", items.toString())
+                }
+            } catch (e: Exception) {
+                Log.d("RESULT_RETRO", "Error: ${e.message}")
+            }
+        }
+
+        return items
     }
 }

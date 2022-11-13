@@ -9,6 +9,15 @@ class ItemService(private var itemRepository: ItemRepository) {
 
     constructor() : this(ItemRepository())
 
+    suspend fun generateItems() {
+        itemRepository.generateItems()
+    }
+
+    fun loadItems(items: ArrayList<Item>) {
+        this.items = items
+        itemRepository.loadItems(items)
+    }
+
     // select a given number of items from the repository
     fun selectRandomItems(count: Int): ArrayList<Item> {
         items.clear()
