@@ -6,7 +6,7 @@ enum class QuestionType {
     SPINNER
 }
 
-data class Item(val type: Int, val question : String, val answers: MutableList<String>, var correct: MutableList<Int>)
+data class Item(val type: Int, val question : String, val answers: MutableList<String>, var correct: MutableList<String>)
 {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -37,7 +37,7 @@ val items : MutableList<Item> = mutableListOf(
             "var is scoped to the nearest function block and val is scoped to the nearest enclosing block",
             "Variables declared with val are final, those with var are not"
         ),
-        correct = mutableListOf(3)
+        correct = mutableListOf( "Variables declared with val are final, those with var are not")
     ),
     Item(
         type = QuestionType.MULTIPLE_CHOICE.ordinal,
@@ -48,7 +48,7 @@ val items : MutableList<Item> = mutableListOf(
             "x = 5",
             "var x: Int = 5"
         ),
-        correct = mutableListOf(0, 1, 3)
+        correct = mutableListOf( "var x = 5", "val x = 5", "var x: Int = 5")
     ),
     Item (
         type = QuestionType.MULTIPLE_CHOICE.ordinal,
@@ -59,7 +59,7 @@ val items : MutableList<Item> = mutableListOf(
             "fun x(): Int {}",
             "fun x: Int() {}"
             ),
-        correct = mutableListOf(0, 2)
+        correct = mutableListOf( "fun x() {}",  "fun x(): Int {}",)
     ),
     Item (
         type = QuestionType.SPINNER.ordinal,
@@ -70,7 +70,7 @@ val items : MutableList<Item> = mutableListOf(
             "Android SDK Manager",
             "Virtual Editor"
             ),
-        correct = mutableListOf(0)
+        correct = mutableListOf( "Theme Editor")
     ),
     Item (
         type = QuestionType.SINGLE_CHOICE.ordinal,
@@ -81,7 +81,7 @@ val items : MutableList<Item> = mutableListOf(
             "A class is a blueprint for an object, and an object is an instance of a class",
             "A class is a blueprint for an object, and an object is a class"
         ),
-        correct = mutableListOf(2)
+        correct = mutableListOf("A class is a blueprint for an object, and an object is an instance of a class")
     ),
     Item (
         type = QuestionType.SINGLE_CHOICE.ordinal,
@@ -92,7 +92,7 @@ val items : MutableList<Item> = mutableListOf(
             "A generated copy(...) method, to create copies of instances",
             "Automatic conversion to JSON"
             ),
-        correct = mutableListOf(3)
+        correct = mutableListOf("Automatic conversion to JSON")
     ),
     Item (
         type = QuestionType.SINGLE_CHOICE.ordinal,
@@ -103,7 +103,7 @@ val items : MutableList<Item> = mutableListOf(
             "JVM",
             "LLVM"
             ),
-        correct = mutableListOf(3)
+        correct = mutableListOf("LLVM")
     ),
     Item (
         type = QuestionType.SINGLE_CHOICE.ordinal,
@@ -114,7 +114,7 @@ val items : MutableList<Item> = mutableListOf(
             "They provide asynchronous code without thread blocking",
             "These are functions which accept other functions as arguments or return them"
             ),
-        correct = mutableListOf(2)
+        correct = mutableListOf("They provide asynchronous code without thread blocking")
     ),
     Item (
         type = QuestionType.SINGLE_CHOICE.ordinal,
@@ -125,7 +125,7 @@ val items : MutableList<Item> = mutableListOf(
             "var i : int = 42",
             "int i = 42"
             ),
-        correct = mutableListOf(1)
+        correct = mutableListOf("var i : Int = 42")
     ),
     Item (
         type = QuestionType.SINGLE_CHOICE.ordinal,
@@ -136,7 +136,7 @@ val items : MutableList<Item> = mutableListOf(
             "Yes, Kotlin is similar to Java in this respect",
             "No, Kotlin does not have nor user primitive data types"
             ),
-        correct = mutableListOf(1)
+        correct = mutableListOf("No, not at language level. But the Kotlin compiler makes use of JVM primitives for best performance")
     ),
     Item (
         type = QuestionType.SINGLE_CHOICE.ordinal,
@@ -147,7 +147,7 @@ val items : MutableList<Item> = mutableListOf(
             "Kotlin can easily call Java code and vice versa",
             "While Kotlin runs on the JVM, it cannot interoperate with Java"
             ),
-        correct = mutableListOf(2)
+        correct = mutableListOf("Kotlin can easily call Java code and vice versa")
     ),
     Item (
         type = QuestionType.SINGLE_CHOICE.ordinal,
@@ -158,7 +158,7 @@ val items : MutableList<Item> = mutableListOf(
             "int sum(a: Int, b: Int)",
             "int sum(int a, int b)"
             ),
-        correct = mutableListOf(0)
+        correct = mutableListOf("fun sum(a: Int, b: Int): Int")
     ),
     Item (
         type = QuestionType.SINGLE_CHOICE.ordinal,
@@ -169,6 +169,6 @@ val items : MutableList<Item> = mutableListOf(
             "It returns the left-hand operand if the operand is not null, otherwise it returns the right hand operand",
             "It's the modulo operator in Kotlin, similar to Java's %"
             ),
-        correct = mutableListOf(0)
+        correct = mutableListOf("It converts any value to a non-null type and throws an exception if the values is in fact null")
     )
 )

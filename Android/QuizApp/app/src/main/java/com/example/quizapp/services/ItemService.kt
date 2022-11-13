@@ -37,19 +37,23 @@ class ItemService(private var itemRepository: ItemRepository) {
         for (question in items) {
             when(question.type) {
                 QuestionType.SINGLE_CHOICE.ordinal -> {
-                    val answer = question.answers[question.correct[0]]
+                    val correctIndex = question.answers.indexOf(question.correct[0])
+                    val answer = question.answers[correctIndex]
                     question.answers.shuffle()
                     val tempIndex = question.answers.indexOf(answer)
-                    question.correct = mutableListOf(tempIndex)
+                    question.correct = mutableListOf(question.answers[tempIndex])
                 }
                 QuestionType.MULTIPLE_CHOICE.ordinal -> {
-                    val correctAnswers = question.correct.map { question.answers[it] }
+                    // get all correct answers
+                    val correctAnswers = question.correct
 
                     question.answers.shuffle()
 
-                    val newCorrectAnswers = mutableListOf<Int>()
+                    val newCorrectAnswers = mutableListOf<String>()
                     for (answer in correctAnswers) {
-                        newCorrectAnswers.add(question.answers.indexOf(answer))
+                        // get the index of the correct answer in the shuffled list
+                        val tempIndex = question.answers.indexOf(answer)
+                        newCorrectAnswers.add(question.answers[tempIndex])
                     }
 
                     question.correct = newCorrectAnswers

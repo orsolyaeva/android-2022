@@ -74,7 +74,7 @@ class QuestionAddFragment : Fragment() {
             val item: Item = Item(
                 question = question.text.toString(),
                 answers = answers,
-                correct = mutableListOf(0),
+                correct = mutableListOf(answers[0]),
                 type = 0
             )
 

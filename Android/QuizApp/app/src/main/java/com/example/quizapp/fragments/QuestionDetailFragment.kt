@@ -56,7 +56,7 @@ class QuestionDetailFragment : Fragment() {
                 LinearLayout.LayoutParams.WRAP_CONTENT
             )
             params.setMargins(0, 30, 0, 0)
-            if (currentQuestion?.correct?.contains(index) == true) {
+            if (currentQuestion?.correct?.contains(answer) == true) {
                 answerText.text = "✓ " + answerText.text
                 answerText.setTextColor(Color.GREEN)
             }

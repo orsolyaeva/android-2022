@@ -48,23 +48,30 @@ class QuizViewModel: ViewModel() {
 
         when(currentQuestion.value?.first?.type) {
             QuestionType.SINGLE_CHOICE.ordinal -> {
-                if (answer[0] == currentQuestion.value?.first?.correct?.get(0)) {
+                // get answer[0] text
+                val userAnswer = currentQuestion.value?.first?.answers?.get(answer[0])
+                if (userAnswer == currentQuestion.value?.first?.correct?.get(0)) {
                     countCorrect++
                 }
             }
             QuestionType.MULTIPLE_CHOICE.ordinal -> {
-                if (answer.containsAll(currentQuestion.value?.first?.correct!!)) {
+                val userAnswers = mutableListOf<String>()
+                for (i in answer) {
+                    userAnswers.add(currentQuestion.value?.first?.answers?.get(i)!!)
+                }
+                if (userAnswers.containsAll(currentQuestion.value?.first?.correct!!)) {
                     countCorrect++
-                } else if (answer.intersect(currentQuestion.value?.first?.correct!!.toSet()).isNotEmpty()) {
+                } else if (userAnswers.intersect(currentQuestion.value?.first?.correct!!.toSet()).isNotEmpty()) {
                     countPartiallyCorrect++
                     Log.d("QuizViewModel", "PARTIALLY CORRECT")
                     val totalNumberAnswers = currentQuestion.value?.first?.correct?.size!!
-                    val totalNumberCorrectAnswers = answer.intersect(currentQuestion.value?.first?.correct!!.toSet()).size
+                    val totalNumberCorrectAnswers = userAnswers.intersect(currentQuestion.value?.first?.correct!!.toSet()).size
                     countPartiallyCorrectPoints += (totalNumberCorrectAnswers.toDouble() / totalNumberAnswers.toDouble())
                 }
             }
             QuestionType.SPINNER.ordinal -> {
-                if (answer[0] == currentQuestion.value?.first?.correct?.get(0)) {
+                val userAnswer = currentQuestion.value?.first?.answers?.get(answer[0])
+                if (userAnswer == currentQuestion.value?.first?.correct?.get(0)) {
                     countCorrect++
                 }
             }
