@@ -7,8 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
-import androidx.lifecycle.ViewModelProvider
-import com.example.quizapp.R
+import androidx.fragment.app.activityViewModels
 import com.example.quizapp.databinding.FragmentQuestionAddBinding
 import com.example.quizapp.models.Item
 import com.example.quizapp.viewModels.QuizViewModel
@@ -17,13 +16,13 @@ import com.google.android.material.snackbar.Snackbar
 
 class QuestionAddFragment : Fragment() {
     private lateinit var binding: FragmentQuestionAddBinding
-    private lateinit var viewModel: QuizViewModel
     private lateinit var question: TextView
     private lateinit var answer1: TextView
     private lateinit var answer2: TextView
     private lateinit var answer3: TextView
     private lateinit var answer4: TextView
     private lateinit var addQuestionButton: Button
+    private val viewModel: QuizViewModel by activityViewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,7 +33,6 @@ class QuestionAddFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentQuestionAddBinding.inflate(inflater, container, false)
-        viewModel = ViewModelProvider(requireActivity()).get(QuizViewModel::class.java)
         return binding.root
     }
 

@@ -16,6 +16,7 @@
             android:name=".GetStartedActivity"
             android:exported="false"
             android:label="@string/title_activity_get_started"
+            android:screenOrientation="portrait"
             android:theme="@style/Theme.QuizApp.NoActionBar">
             <meta-data
                 android:name="android.app.lib_name"

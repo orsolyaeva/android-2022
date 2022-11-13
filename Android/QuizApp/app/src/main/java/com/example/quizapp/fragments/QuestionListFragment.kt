@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -19,16 +20,15 @@ import com.example.quizapp.viewModels.QuizViewModel
 
 class QuestionListFragment : Fragment(), DataAdapter.OnItemClickListener, DataAdapter.OnItemDeleteListener, DataAdapter.OnItemDetailsListener {
     private lateinit var dataAdapter: DataAdapter
-    private lateinit var viewModel: QuizViewModel
     private lateinit var recyclerView: RecyclerView
     private lateinit var binding: FragmentQuestionListBinding
+    private val viewModel: QuizViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentQuestionListBinding.inflate(inflater, container, false)
-        viewModel = ViewModelProvider(requireActivity())[QuizViewModel::class.java]
 
         recyclerView = binding.recyclerView
         dataAdapter = DataAdapter(ArrayList<Item>(), this, this, this)

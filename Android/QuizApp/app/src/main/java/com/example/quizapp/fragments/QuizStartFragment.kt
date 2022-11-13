@@ -13,16 +13,20 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageView
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.quizapp.R
 import com.example.quizapp.TAG
 import com.example.quizapp.databinding.FragmentQuizStartBinding
+import com.example.quizapp.models.User
 import com.example.quizapp.viewModels.QuizViewModel
+import com.example.quizapp.viewModels.UserViewModel
 import com.google.android.material.snackbar.Snackbar
 
 /**
@@ -32,14 +36,17 @@ import com.google.android.material.snackbar.Snackbar
  */
 
 class QuizStartFragment : Fragment() {
-    private lateinit var binding: FragmentQuizStartBinding
     private lateinit var contactButton: Button
     private lateinit var getStartedButton: Button
     private lateinit var imageButton: Button
     private lateinit var userName : EditText
     private lateinit var userAge: EditText
-    private lateinit var viewModel: QuizViewModel
+    private lateinit var userAvatar: ImageView
+
     private lateinit var sharedPref: SharedPreferences
+    private lateinit var binding: FragmentQuizStartBinding
+    private val viewModel: QuizViewModel by activityViewModels()
+    private val userViewModel: UserViewModel by activityViewModels()
 
     @RequiresApi(Build.VERSION_CODES.O)
     private val getContent = registerForActivityResult(ActivityResultContracts.PickContact()) { uri ->
@@ -59,7 +66,8 @@ class QuizStartFragment : Fragment() {
             val userAvatar = binding.userAvatar
             userAvatar.setImageURI(it)
 
-            sharedPref.edit().putString("profilePicture", it.toString()).apply()
+            userViewModel.setProfilePicture(it)
+//            sharedPref.edit().putString("profilePicture", it.toString()).apply()
         }
     }
 
@@ -74,6 +82,10 @@ class QuizStartFragment : Fragment() {
         if (sharedPref.contains("username")) {
             userName.setText(sharedPref.getString("username", ""))
         }
+
+        if(userViewModel.getProfilePicture() != null) {
+            userAvatar.setImageURI(userViewModel.getProfilePicture())
+        }
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -84,7 +96,6 @@ class QuizStartFragment : Fragment() {
         Log.d("QuizStartFragment", "onCreateView: ")
         binding = FragmentQuizStartBinding.inflate(inflater, container, false)
         sharedPref = requireActivity().getPreferences(Context.MODE_PRIVATE)
-        viewModel = ViewModelProvider(requireActivity())[QuizViewModel::class.java]
 
         viewModel.resetQuiz()
 
@@ -97,6 +108,7 @@ class QuizStartFragment : Fragment() {
         imageButton = binding.selectImageButton
         userName = binding.userName
         userAge = binding.userAge
+        userAvatar = binding.userAvatar
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -145,6 +157,9 @@ class QuizStartFragment : Fragment() {
                     putString("username", userNameT)
                     apply()
                 }
+
+                userViewModel.resetHighScore()
+                userViewModel.setName(userNameT)
             }
 
             // check if username is empty from shared preferences
@@ -154,6 +169,7 @@ class QuizStartFragment : Fragment() {
                     putString("username", userNameT)
                     apply()
                 }
+                userViewModel.setName(userNameT)
             }
             findNavController().navigate(R.id.action_quizStartFragment_to_questionFragment)
         }

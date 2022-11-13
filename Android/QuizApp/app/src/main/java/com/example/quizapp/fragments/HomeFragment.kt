@@ -16,10 +16,6 @@ class HomeFragment : Fragment() {
     private lateinit var readQuestionsButton: Button
     private lateinit var addQuestionButton: Button
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?

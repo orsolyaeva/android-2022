@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
 import com.example.quizapp.R
 import com.example.quizapp.databinding.FragmentQuestionDetailBinding
@@ -21,11 +22,10 @@ class QuestionDetailFragment : Fragment() {
     private lateinit var questionText: TextView
     private lateinit var questionType: TextView
     private lateinit var answersGroup: LinearLayout
-    private lateinit var viewModel: QuizViewModel
+    private val viewModel: QuizViewModel by activityViewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel = ViewModelProvider(requireActivity())[QuizViewModel::class.java]
         arguments?.let {
             val id = it.getInt("id")
             currentQuestion = viewModel.getAllQuestions().value?.get(id)
@@ -37,7 +37,6 @@ class QuestionDetailFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentQuestionDetailBinding.inflate(inflater, container, false)
-        viewModel = ViewModelProvider(requireActivity())[QuizViewModel::class.java]
 
         initViews()
 

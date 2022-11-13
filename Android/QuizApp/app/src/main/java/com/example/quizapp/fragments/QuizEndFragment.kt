@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.quizapp.R
@@ -25,22 +26,25 @@ import com.example.quizapp.viewModels.UserViewModel
  */
 
 class QuizEndFragment : Fragment() {
-
     private lateinit var binding: FragmentQuizEndBinding
-    private lateinit var viewModel: QuizViewModel
     private lateinit var scoreText : TextView
     private lateinit var tryAgainButton : Button
     private lateinit var correctNumber: TextView
     private lateinit var incorrectNumber: TextView
     private lateinit var partiallyCorrectNumber: TextView
     private lateinit var sharedPref: SharedPreferences
+    private val viewModel: QuizViewModel by activityViewModels()
+    private val userViewModel: UserViewModel by activityViewModels()
 
     @SuppressLint("SetTextI18n")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initViews()
         initListeners()
-        sharedPref.edit().putFloat("highScore", viewModel.getScore().toFloat()).apply()
+        if(viewModel.getScore() > sharedPref.getFloat("highScore", 0.0f)) {
+            sharedPref.edit().putFloat("highScore", viewModel.getScore().toFloat()).apply()
+        }
+        userViewModel.setHighScore(viewModel.getScore())
         scoreText.text = "${viewModel.getScore()} / ${viewModel.getNumberOfQuestions()} points"
         correctNumber.text = "Correct answers: ${viewModel.getCorrectAnswers()}"
         incorrectNumber.text = "Incorrect answers: ${viewModel.getIncorrectAnswers()}"
@@ -51,7 +55,6 @@ class QuizEndFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        viewModel = ViewModelProvider(requireActivity())[QuizViewModel::class.java]
         sharedPref = requireActivity().getPreferences(Context.MODE_PRIVATE)
         binding = FragmentQuizEndBinding.inflate(inflater, container, false)
         return binding.root
@@ -67,7 +70,10 @@ class QuizEndFragment : Fragment() {
 
     private fun initListeners() {
         tryAgainButton.setOnClickListener {
-            sharedPref.edit().putFloat("highScore", viewModel.getScore().toFloat()).apply()
+            userViewModel.setHighScore(viewModel.getScore())
+            if(viewModel.getScore() > sharedPref.getFloat("highScore", 0.0f)) {
+                sharedPref.edit().putFloat("highScore", viewModel.getScore().toFloat()).apply()
+            }
             viewModel.resetQuiz()
             findNavController().navigate(R.id.action_quizEndFragment_to_quizStartFragment)
         }

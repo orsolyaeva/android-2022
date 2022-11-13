@@ -13,6 +13,7 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.activity.OnBackPressedCallback
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.quizapp.R
@@ -30,13 +31,13 @@ import com.example.quizapp.viewModels.UserViewModel
  */
 class QuestionFragment : Fragment() {
     private lateinit var binding: FragmentQuestionBinding
-    private lateinit var viewModel: QuizViewModel
     private lateinit var questionText : TextView
     private lateinit var nextButton : Button
     private lateinit var radioGroup : RadioGroup
     private lateinit var spinner : Spinner
     private lateinit var sharedPref : SharedPreferences
     private var userAnswers = mutableListOf<Int>()
+    private val viewModel: QuizViewModel by activityViewModels()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -47,7 +48,6 @@ class QuestionFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.d("QuestionFragment", "onCreate: ")
-        viewModel = ViewModelProvider(requireActivity())[QuizViewModel::class.java]
         sharedPref = requireActivity().getPreferences(Context.MODE_PRIVATE)
         binding = FragmentQuestionBinding.inflate(layoutInflater)
         initViews()
@@ -61,7 +61,6 @@ class QuestionFragment : Fragment() {
     ): View {
         Log.d("QuestionFragment", "onCreateView: ")
         binding = FragmentQuestionBinding.inflate(inflater, container, false)
-        viewModel = ViewModelProvider(requireActivity())[QuizViewModel::class.java]
 
         viewModel.currentQuestion.observe(requireActivity()) { (question, isLast) ->
             binding.questionText.text = question?.question
