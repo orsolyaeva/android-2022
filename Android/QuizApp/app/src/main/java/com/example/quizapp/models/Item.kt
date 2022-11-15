@@ -3,7 +3,7 @@ package com.example.quizapp.models
 enum class QuestionType {
     SINGLE_CHOICE,
     MULTIPLE_CHOICE,
-    SPINNER
+    TRUE_FALSE
 }
 
 data class Item(val type: Int, val question : String, val answers: MutableList<String>, var correct: MutableList<String>)
@@ -28,6 +28,135 @@ data class Item(val type: Int, val question : String, val answers: MutableList<S
 }
 
 val items : MutableList<Item> = mutableListOf(
+    Item(
+        type = QuestionType.SINGLE_CHOICE.ordinal,
+        question = " What Russian automatic gas-operated assault rifle was developed in the Soviet Union in 1947, and is still popularly used today?",
+        answers = mutableListOf(
+            "AK-47",
+            "RPK",
+            "M16",
+            "MG 42"
+        ),
+        correct = mutableListOf("AK-47")
+    ),
+    Item(
+        type = QuestionType.SINGLE_CHOICE.ordinal,
+        question = "Which singer was featured in Swedish producer Avicii's song 'Wake Me Up'?",
+        answers = mutableListOf(
+            "Aloe Blacc",
+            "John Legend",
+            "CeeLo Green",
+            "Pharrell Williams"
+        ),
+        correct = mutableListOf("Aloe Blacc")
+    ),
+    Item(
+        type = QuestionType.SINGLE_CHOICE.ordinal,
+        question = "Which of the following ancient peoples was NOT classified as Hellenic (Greek)?",
+        answers = mutableListOf(
+            "Illyrians",
+            "Dorians",
+            "Achaeans",
+            "Ionians"
+        ),
+        correct = mutableListOf("Illyrians")
+    ),
+    Item(
+        type = QuestionType.TRUE_FALSE.ordinal,
+        question = "The main playable character of the 2015 RPG 'Undertale' is a monster.",
+        answers = mutableListOf(
+            "True",
+            "False"
+        ),
+        correct = mutableListOf("True")
+    ),
+    Item(
+        type = QuestionType.TRUE_FALSE.ordinal,
+        question = "Ana was added as a new hero for the game Overwatch on July 19th, 2016.",
+        answers = mutableListOf(
+            "True",
+            "False"
+        ),
+        correct = mutableListOf("False")
+    ),
+    Item(
+        type = QuestionType.TRUE_FALSE.ordinal,
+        question = "Roger Federer is a famous soccer player.",
+        answers = mutableListOf(
+            "True",
+            "False"
+        ),
+        correct = mutableListOf("True")
+    ),
+    Item (
+        type = QuestionType.SINGLE_CHOICE.ordinal,
+        question = "What album did Bon Iver release in 2016?",
+        answers = mutableListOf(
+            "22, A Million",
+            "Bon Iver, Bon Iver",
+            "Blood Bank EP",
+            "For Emma, Forever Ago"
+        ),
+        correct = mutableListOf("22, A Million")
+    ),
+    Item (
+        type = QuestionType.SINGLE_CHOICE.ordinal,
+        question = "What is the capital of Seychelles?",
+        answers = mutableListOf(
+            "Victoria",
+            "Luanda",
+            "N'Djamena",
+            "Tripoli"
+        ),
+        correct = mutableListOf("Victoria")
+    ),
+    Item(
+        type = QuestionType.SINGLE_CHOICE.ordinal,
+        question = "What is the opening track on Lorde's Pure Heroine?",
+        answers = mutableListOf(
+            "Tennis Court",
+            "Team",
+            "Royals",
+            "400 Lux"
+        ),
+        correct = mutableListOf("Tennis Court")
+    ),
+    Item(
+        type = QuestionType.SINGLE_CHOICE.ordinal,
+        question = "What causes the sound of a heartbeat?",
+        answers = mutableListOf(
+            "Contraction of the heart chambers",
+            "Blood exiting the heart",
+            "Relaxation of the heart chambers",
+            "Closure of the heart valves"
+        ),
+        correct = mutableListOf("Closure of the heart valves")
+    ),
+    Item(
+        type = QuestionType.MULTIPLE_CHOICE.ordinal,
+        question = "Which of the following are valid ways to declare a variable in Kotlin?",
+        answers = mutableListOf(
+            "var x = 5",
+            "val x = 5",
+            "x = 5",
+            "var x: Int = 5"
+        ),
+        correct = mutableListOf( "var x = 5", "val x = 5", "var x: Int = 5")
+    ),
+    Item (
+        type = QuestionType.MULTIPLE_CHOICE.ordinal,
+        question = "Which of the following are valid ways to declare a function in Kotlin?",
+        answers = mutableListOf(
+            "fun x() {}",
+            "fun x: Int {}",
+            "fun x(): Int {}",
+            "fun x: Int() {}"
+        ),
+        correct = mutableListOf( "fun x() {}",  "fun x(): Int {}",)
+    )
+)
+
+val items_old : MutableList<Item> = mutableListOf(
     Item(
         type = QuestionType.SINGLE_CHOICE.ordinal,
         question = "What is the difference between val and var in Kotlin?",
@@ -58,18 +187,18 @@ val items : MutableList<Item> = mutableListOf(
             "fun x: Int {}",
             "fun x(): Int {}",
             "fun x: Int() {}"
-            ),
+        ),
         correct = mutableListOf( "fun x() {}",  "fun x(): Int {}",)
     ),
     Item (
-        type = QuestionType.SPINNER.ordinal,
+        type = QuestionType.SINGLE_CHOICE.ordinal,
         question = "You can create an emulator to stimulate the configuration of a particular type of Android device using a tool like ____",
         answers = mutableListOf(
             "Theme Editor",
             "AVD Manager",
             "Android SDK Manager",
             "Virtual Editor"
-            ),
+        ),
         correct = mutableListOf( "Theme Editor")
     ),
     Item (
@@ -91,7 +220,7 @@ val items : MutableList<Item> = mutableListOf(
             "Auto-generated hashCode() and equals() methods",
             "A generated copy(...) method, to create copies of instances",
             "Automatic conversion to JSON"
-            ),
+        ),
         correct = mutableListOf("Automatic conversion to JSON")
     ),
     Item (
@@ -102,7 +231,7 @@ val items : MutableList<Item> = mutableListOf(
             ".NET CLR",
             "JVM",
             "LLVM"
-            ),
+        ),
         correct = mutableListOf("LLVM")
     ),
     Item (
@@ -113,7 +242,7 @@ val items : MutableList<Item> = mutableListOf(
             "Its Kotlin's term for class methods",
             "They provide asynchronous code without thread blocking",
             "These are functions which accept other functions as arguments or return them"
-            ),
+        ),
         correct = mutableListOf("They provide asynchronous code without thread blocking")
     ),
     Item (
@@ -124,7 +253,7 @@ val items : MutableList<Item> = mutableListOf(
             "var i : Int = 42",
             "var i : int = 42",
             "int i = 42"
-            ),
+        ),
         correct = mutableListOf("var i : Int = 42")
     ),
     Item (
@@ -135,7 +264,7 @@ val items : MutableList<Item> = mutableListOf(
             "No, not at language level. But the Kotlin compiler makes use of JVM primitives for best performance",
             "Yes, Kotlin is similar to Java in this respect",
             "No, Kotlin does not have nor user primitive data types"
-            ),
+        ),
         correct = mutableListOf("No, not at language level. But the Kotlin compiler makes use of JVM primitives for best performance")
     ),
     Item (
@@ -146,7 +275,7 @@ val items : MutableList<Item> = mutableListOf(
             "Kotlin provides a compatibility layer for Java interoperability which comes with some cost at runtime",
             "Kotlin can easily call Java code and vice versa",
             "While Kotlin runs on the JVM, it cannot interoperate with Java"
-            ),
+        ),
         correct = mutableListOf("Kotlin can easily call Java code and vice versa")
     ),
     Item (
@@ -157,7 +286,7 @@ val items : MutableList<Item> = mutableListOf(
             "function sum(a: Int, b: Int): Int",
             "int sum(a: Int, b: Int)",
             "int sum(int a, int b)"
-            ),
+        ),
         correct = mutableListOf("fun sum(a: Int, b: Int): Int")
     ),
     Item (
@@ -168,7 +297,7 @@ val items : MutableList<Item> = mutableListOf(
             "It compares two values for identity rather than equality",
             "It returns the left-hand operand if the operand is not null, otherwise it returns the right hand operand",
             "It's the modulo operator in Kotlin, similar to Java's %"
-            ),
+        ),
         correct = mutableListOf("It converts any value to a non-null type and throws an exception if the values is in fact null")
     )
 )

@@ -81,7 +81,7 @@ class DataAdapter(
         when(currentItem.type) {
             QuestionType.MULTIPLE_CHOICE.ordinal -> holder.answerType.text = "Multiple Choice"
             QuestionType.SINGLE_CHOICE.ordinal -> holder.answerType.text = "Single choice"
-            QuestionType.SPINNER.ordinal -> holder.answerType.text = "Spinner"
+            QuestionType.TRUE_FALSE.ordinal -> holder.answerType.text = "True or False"
         }
     }
 

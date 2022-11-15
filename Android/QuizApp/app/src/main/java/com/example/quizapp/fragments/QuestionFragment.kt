@@ -14,14 +14,12 @@ import android.widget.*
 import androidx.activity.OnBackPressedCallback
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.quizapp.R
 import com.example.quizapp.databinding.FragmentQuestionBinding
 import com.example.quizapp.models.Item
 import com.example.quizapp.models.QuestionType
 import com.example.quizapp.viewModels.QuizViewModel
-import com.example.quizapp.viewModels.UserViewModel
 
 
 /**
@@ -65,14 +63,7 @@ class QuestionFragment : Fragment() {
         viewModel.currentQuestion.observe(requireActivity()) { (question, isLast) ->
             binding.questionText.text = question?.question
 
-            when(question?.type) {
-                QuestionType.SPINNER.ordinal -> {
-                    handleSpinner(question)
-                }
-                else -> {
-                    handleSingleMultipleChoice(question)
-                }
-            }
+            handleSingleMultipleChoice(question)
 
             if(isLast) {
                 nextButton.text = "Submit"
@@ -85,23 +76,6 @@ class QuestionFragment : Fragment() {
         }
 
         return binding.root
-    }
-
-    private fun handleSpinner(question: Item?) {
-        spinner = Spinner(requireContext())
-        val spinnerParams = ConstraintLayout.LayoutParams(
-            ConstraintLayout.LayoutParams.MATCH_PARENT,
-            ConstraintLayout.LayoutParams.WRAP_CONTENT
-        )
-        spinnerParams.bottomToTop = R.id.nextQuestionButton
-        spinnerParams.topToBottom = R.id.questionText
-        spinnerParams.setMargins(30, 0, 30, 200)
-        spinner.layoutParams = spinnerParams
-        val answers : MutableList<String> = question?.answers?.toMutableList() ?: mutableListOf()
-        val arrayAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, answers)
-        arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        spinner.adapter = arrayAdapter
-        binding.questionLayout.addView(spinner)
     }
 
     private fun handleSingleMultipleChoice(question: Item?) {
@@ -119,7 +93,7 @@ class QuestionFragment : Fragment() {
         params.bottomToTop = R.id.nextQuestionButton
         radioGroup.layoutParams = params
 
-        if (question?.type == QuestionType.SINGLE_CHOICE.ordinal) {
+        if (question?.type == QuestionType.SINGLE_CHOICE.ordinal || question?.type == QuestionType.TRUE_FALSE.ordinal) {
             for (i in 0 until numberOptions) {
                 val radioButton = RadioButton(requireContext())
                 radioButton.text = question.answers[i]
@@ -168,8 +142,14 @@ class QuestionFragment : Fragment() {
 
                 return userAnswers.isNotEmpty()
             }
-            QuestionType.SPINNER.ordinal -> {
-                userAnswers.add(spinner.selectedItemPosition)
+            QuestionType.TRUE_FALSE.ordinal -> {
+                // TODO: handle true/false question
+                val selectedAnswer = radioGroup.checkedRadioButtonId
+                if (selectedAnswer == -1) {
+                    return false
+                }
+
+                userAnswers.add(radioGroup.checkedRadioButtonId)
                 return true
             }
             else -> {}
@@ -185,11 +165,7 @@ class QuestionFragment : Fragment() {
             }
 
             viewModel.checkAnswer(userAnswers)
-            if (viewModel.currentQuestion.value?.first?.type == QuestionType.SPINNER.ordinal) {
-                binding.questionLayout.removeView(spinner)
-            } else {
-                binding.questionLayout.removeView(radioGroup)
-            }
+            binding.questionLayout.removeView(radioGroup)
 
             viewModel.getNextQuestion()
         }

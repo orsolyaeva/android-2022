@@ -45,7 +45,7 @@ class QuestionDetailFragment : Fragment() {
         when(currentQuestion?.type) {
             0 -> questionType.text = "Single choice"
             1 -> questionType.text = "Multiple choice"
-            2 -> questionType.text = "Spinner"
+            2 -> questionType.text = "True/False"
         }
 
         currentQuestion?.answers?.forEachIndexed() { index, answer ->

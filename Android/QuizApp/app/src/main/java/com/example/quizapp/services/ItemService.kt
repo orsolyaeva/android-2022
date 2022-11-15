@@ -1,17 +1,15 @@
 package com.example.quizapp.services
 
+import android.util.Log
 import com.example.quizapp.repositories.ItemRepository
 import com.example.quizapp.models.Item
 import com.example.quizapp.models.QuestionType
+import kotlinx.coroutines.CoroutineScope
 
 class ItemService(private var itemRepository: ItemRepository) {
     private var items =  ArrayList<Item>()
 
     constructor() : this(ItemRepository())
-
-    suspend fun generateItems() {
-        itemRepository.generateItems()
-    }
 
     fun loadItems(items: ArrayList<Item>) {
         this.items = items
@@ -44,30 +42,7 @@ class ItemService(private var itemRepository: ItemRepository) {
         items.shuffle()
 
         for (question in items) {
-            when(question.type) {
-                QuestionType.SINGLE_CHOICE.ordinal -> {
-                    val correctIndex = question.answers.indexOf(question.correct[0])
-                    val answer = question.answers[correctIndex]
-                    question.answers.shuffle()
-                    val tempIndex = question.answers.indexOf(answer)
-                    question.correct = mutableListOf(question.answers[tempIndex])
-                }
-                QuestionType.MULTIPLE_CHOICE.ordinal -> {
-                    // get all correct answers
-                    val correctAnswers = question.correct
-
-                    question.answers.shuffle()
-
-                    val newCorrectAnswers = mutableListOf<String>()
-                    for (answer in correctAnswers) {
-                        // get the index of the correct answer in the shuffled list
-                        val tempIndex = question.answers.indexOf(answer)
-                        newCorrectAnswers.add(question.answers[tempIndex])
-                    }
-
-                    question.correct = newCorrectAnswers
-                }
-            }
+            question.answers.shuffle()
         }
     }
 

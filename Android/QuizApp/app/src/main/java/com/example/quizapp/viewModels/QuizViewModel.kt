@@ -26,14 +26,14 @@ class QuizViewModel: ViewModel() {
         MutableLiveData<Pair<Item?, Boolean>>()
 
     init {
-        val temp = getQuestionFromAPI() as ArrayList<Item>
-        Log.d("QuizViewModel",  temp.toString())
-
         currentQuestion.value = Pair(itQuestion.next(), false)
     }
 
     private fun startQuiz(): MutableList<Item> {
         itemService.randomizeQuestions()
+
+        Log.d("QuizViewModel", "Questions: ${questions.size}")
+        Log.d("QuizViewModel", "Questions: ${questions}")
 
         return questions
     }
@@ -74,7 +74,8 @@ class QuizViewModel: ViewModel() {
                     countPartiallyCorrectPoints += (totalNumberCorrectAnswers.toDouble() / totalNumberAnswers.toDouble())
                 }
             }
-            QuestionType.SPINNER.ordinal -> {
+            QuestionType.TRUE_FALSE.ordinal -> {
+                // TODO: true/false implementation
                 val userAnswer = currentQuestion.value?.first?.answers?.get(answer[0])
                 if (userAnswer == currentQuestion.value?.first?.correct?.get(0)) {
                     countCorrect++
@@ -115,7 +116,7 @@ class QuizViewModel: ViewModel() {
         countCorrect = 0
         countPartiallyCorrect = 0
         countPartiallyCorrectPoints = 0.0
-        val temp = (1..itemService.getNumberTotalQuestions()).random()
+        val temp = (3..itemService.getNumberTotalQuestions()).random()
         Log.d("QuizViewModelQ", "temp: $temp")
         questions = itemService.selectRandomItems(temp)
         numberOfQuestions = questions.size
