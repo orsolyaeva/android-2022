@@ -7,8 +7,10 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import android.widget.Spinner
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -22,6 +24,7 @@ class QuestionListFragment : Fragment(), DataAdapter.OnItemClickListener, DataAd
     private lateinit var dataAdapter: DataAdapter
     private lateinit var recyclerView: RecyclerView
     private lateinit var binding: FragmentQuestionListBinding
+    private lateinit var categoryFilter: Spinner
     private val viewModel: QuizViewModel by activityViewModels()
 
     override fun onCreateView(
@@ -29,6 +32,10 @@ class QuestionListFragment : Fragment(), DataAdapter.OnItemClickListener, DataAd
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentQuestionListBinding.inflate(inflater, container, false)
+        categoryFilter = binding.categoryFilter
+
+        onCategoryFilterChanged()
+        loadCategories()
 
         recyclerView = binding.recyclerView
         dataAdapter = DataAdapter(ArrayList<Item>(), this, this, this)
@@ -46,6 +53,19 @@ class QuestionListFragment : Fragment(), DataAdapter.OnItemClickListener, DataAd
         return binding.root
     }
 
+    private fun loadCategories() {
+        val categoryList = viewModel.getCategoryList()
+
+        val categoryAdapter = ArrayAdapter(
+            requireContext(),
+            android.R.layout.simple_spinner_item,
+            listOf("Any category") + categoryList
+        )
+        categoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+
+        categoryFilter.adapter = categoryAdapter
+    }
+
 
     override fun onItemClick(position: Int) {
         Log.i("QuestionListFragment", "Clicked item $position")
@@ -53,14 +73,77 @@ class QuestionListFragment : Fragment(), DataAdapter.OnItemClickListener, DataAd
 
     @SuppressLint("NotifyDataSetChanged")
     override fun onItemDelete(position: Int) {
-        viewModel.deleteQuestion(position)
+        val questionText = dataAdapter.getItem(position).question
+        val questionPosition =
+            viewModel.getAllQuestions().value?.indexOfFirst { it.question == questionText }
+        val category = questionPosition?.let { dataAdapter.getItem(it).category }
+        viewModel.deleteQuestion(questionPosition!!)
+
+        Log.i("QuestionListFragment", "category item $category")
+        Log.i("QuestionListFragment", "question item $questionText")
+
+        val categoryList = viewModel.getCategoryList()
+
+        if (!categoryList.contains(category)) {
+            val categoryAdapter = ArrayAdapter(
+                requireContext(),
+                android.R.layout.simple_spinner_item,
+                listOf("Any category") + categoryList
+            )
+            categoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+
+            categoryFilter.adapter = categoryAdapter
+        } else {
+            if (category == "Any category") {
+                viewModel.getAllQuestions().observe(viewLifecycleOwner) {
+                    dataAdapter.setData(it)
+                }
+            } else {
+                if (category != null) {
+                    viewModel.filterQuestions(category).observe(viewLifecycleOwner) {
+                        dataAdapter.setData(it)
+                    }
+                }
+            }
+        }
+
         dataAdapter.notifyDataSetChanged()
-        Log.i("QuestionListFragment", "Deleted item $position")
     }
 
     override fun onItemDetails(position: Int) {
+        val questionText = dataAdapter.getItem(position).question
+        val questionPosition =
+            viewModel.getAllQuestions().value?.indexOfFirst { it.question == questionText }
         findNavController().navigate(R.id.questionDetailFragment, Bundle().apply {
-            putInt("id", position)
+            putInt("id", questionPosition!!)
         })
+    }
+
+    private fun onCategoryFilterChanged() {
+        categoryFilter.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
+                val category = parent?.getItemAtPosition(position).toString()
+                if (category == "Any category") {
+                    viewModel.getAllQuestions().observe(viewLifecycleOwner) {
+                        dataAdapter.setData(it)
+                    }
+                } else {
+                    viewModel.filterQuestions(category).observe(viewLifecycleOwner) {
+                        dataAdapter.setData(it)
+                    }
+                }
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+                viewModel.getAllQuestions().observe(viewLifecycleOwner) {
+                    dataAdapter.setData(it)
+                }
+            }
+        }
     }
 }

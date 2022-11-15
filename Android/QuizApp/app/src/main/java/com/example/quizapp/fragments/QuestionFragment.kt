@@ -143,7 +143,6 @@ class QuestionFragment : Fragment() {
                 return userAnswers.isNotEmpty()
             }
             QuestionType.TRUE_FALSE.ordinal -> {
-                // TODO: handle true/false question
                 val selectedAnswer = radioGroup.checkedRadioButtonId
                 if (selectedAnswer == -1) {
                     return false

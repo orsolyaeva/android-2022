@@ -6,7 +6,19 @@ enum class QuestionType {
     TRUE_FALSE
 }
 
-data class Item(val type: Int, val question : String, val answers: MutableList<String>, var correct: MutableList<String>)
+enum class QuestionDifficulty {
+    EASY,
+    MEDIUM,
+    HARD,
+    NOT_DEFINED
+}
+
+data class Item(val category: String = "Not defined",
+                val type: Int,
+                val difficulty: QuestionDifficulty = QuestionDifficulty.NOT_DEFINED,
+                val question : String,
+                val answers: MutableList<String>,
+                var correct: MutableList<String>)
 {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -29,8 +41,10 @@ data class Item(val type: Int, val question : String, val answers: MutableList<S
 
 val items : MutableList<Item> = mutableListOf(
     Item(
+        category = "History",
         type = QuestionType.SINGLE_CHOICE.ordinal,
-        question = " What Russian automatic gas-operated assault rifle was developed in the Soviet Union in 1947, and is still popularly used today?",
+        difficulty = QuestionDifficulty.MEDIUM,
+        question = "What Russian automatic gas-operated assault rifle was developed in the Soviet Union in 1947, and is still popularly used today?",
         answers = mutableListOf(
             "AK-47",
             "RPK",
@@ -40,7 +54,9 @@ val items : MutableList<Item> = mutableListOf(
         correct = mutableListOf("AK-47")
     ),
     Item(
+        category = "Entertainment: Music",
         type = QuestionType.SINGLE_CHOICE.ordinal,
+        difficulty = QuestionDifficulty.MEDIUM,
         question = "Which singer was featured in Swedish producer Avicii's song 'Wake Me Up'?",
         answers = mutableListOf(
             "Aloe Blacc",
@@ -51,7 +67,9 @@ val items : MutableList<Item> = mutableListOf(
         correct = mutableListOf("Aloe Blacc")
     ),
     Item(
+        category = "History",
         type = QuestionType.SINGLE_CHOICE.ordinal,
+        difficulty = QuestionDifficulty.EASY,
         question = "Which of the following ancient peoples was NOT classified as Hellenic (Greek)?",
         answers = mutableListOf(
             "Illyrians",
@@ -62,7 +80,9 @@ val items : MutableList<Item> = mutableListOf(
         correct = mutableListOf("Illyrians")
     ),
     Item(
+        category = "Entertainment: Video Games",
         type = QuestionType.TRUE_FALSE.ordinal,
+        difficulty = QuestionDifficulty.EASY,
         question = "The main playable character of the 2015 RPG 'Undertale' is a monster.",
         answers = mutableListOf(
             "True",
@@ -71,7 +91,9 @@ val items : MutableList<Item> = mutableListOf(
         correct = mutableListOf("True")
     ),
     Item(
+        category = "Entertainment: Video Games",
         type = QuestionType.TRUE_FALSE.ordinal,
+        difficulty = QuestionDifficulty.EASY,
         question = "Ana was added as a new hero for the game Overwatch on July 19th, 2016.",
         answers = mutableListOf(
             "True",
@@ -80,7 +102,9 @@ val items : MutableList<Item> = mutableListOf(
         correct = mutableListOf("False")
     ),
     Item(
+        category = "Sports",
         type = QuestionType.TRUE_FALSE.ordinal,
+        difficulty = QuestionDifficulty.EASY,
         question = "Roger Federer is a famous soccer player.",
         answers = mutableListOf(
             "True",
@@ -89,7 +113,9 @@ val items : MutableList<Item> = mutableListOf(
         correct = mutableListOf("True")
     ),
     Item (
+        category = "Entertainment: Music",
         type = QuestionType.SINGLE_CHOICE.ordinal,
+        difficulty = QuestionDifficulty.EASY,
         question = "What album did Bon Iver release in 2016?",
         answers = mutableListOf(
             "22, A Million",
@@ -100,7 +126,9 @@ val items : MutableList<Item> = mutableListOf(
         correct = mutableListOf("22, A Million")
     ),
     Item (
+        category = "Geography",
         type = QuestionType.SINGLE_CHOICE.ordinal,
+        difficulty = QuestionDifficulty.MEDIUM,
         question = "What is the capital of Seychelles?",
         answers = mutableListOf(
             "Victoria",
@@ -111,7 +139,9 @@ val items : MutableList<Item> = mutableListOf(
         correct = mutableListOf("Victoria")
     ),
     Item(
+        category = "Entertainment: Music",
         type = QuestionType.SINGLE_CHOICE.ordinal,
+        difficulty = QuestionDifficulty.HARD,
         question = "What is the opening track on Lorde's Pure Heroine?",
         answers = mutableListOf(
             "Tennis Court",
@@ -122,7 +152,9 @@ val items : MutableList<Item> = mutableListOf(
         correct = mutableListOf("Tennis Court")
     ),
     Item(
+        category = "Science & Nature",
         type = QuestionType.SINGLE_CHOICE.ordinal,
+        difficulty = QuestionDifficulty.HARD,
         question = "What causes the sound of a heartbeat?",
         answers = mutableListOf(
             "Contraction of the heart chambers",
@@ -133,7 +165,9 @@ val items : MutableList<Item> = mutableListOf(
         correct = mutableListOf("Closure of the heart valves")
     ),
     Item(
+        category = "Kotlin fundamentals",
         type = QuestionType.MULTIPLE_CHOICE.ordinal,
+        difficulty = QuestionDifficulty.EASY,
         question = "Which of the following are valid ways to declare a variable in Kotlin?",
         answers = mutableListOf(
             "var x = 5",
@@ -144,6 +178,7 @@ val items : MutableList<Item> = mutableListOf(
         correct = mutableListOf( "var x = 5", "val x = 5", "var x: Int = 5")
     ),
     Item (
+        category = "Kotlin fundamentals",
         type = QuestionType.MULTIPLE_CHOICE.ordinal,
         question = "Which of the following are valid ways to declare a function in Kotlin?",
         answers = mutableListOf(

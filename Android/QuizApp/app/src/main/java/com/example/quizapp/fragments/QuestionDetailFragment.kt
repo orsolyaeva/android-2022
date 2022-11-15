@@ -1,7 +1,11 @@
 package com.example.quizapp.fragments
 
+import android.annotation.SuppressLint
 import android.graphics.Color
+import android.graphics.Typeface
 import android.os.Bundle
+import android.text.SpannableString
+import android.text.style.StyleSpan
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -14,12 +18,15 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.quizapp.R
 import com.example.quizapp.databinding.FragmentQuestionDetailBinding
 import com.example.quizapp.models.Item
+import com.example.quizapp.models.QuestionDifficulty
 import com.example.quizapp.viewModels.QuizViewModel
 
 class QuestionDetailFragment : Fragment() {
     private var currentQuestion: Item? = null
     private lateinit var binding: FragmentQuestionDetailBinding
     private lateinit var questionText: TextView
+    private lateinit var questionCategory: TextView
+    private lateinit var questionDifficulty: TextView
     private lateinit var questionType: TextView
     private lateinit var answersGroup: LinearLayout
     private val viewModel: QuizViewModel by activityViewModels()
@@ -32,6 +39,7 @@ class QuestionDetailFragment : Fragment() {
         }
     }
 
+    @SuppressLint("SetTextI18n")
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -47,6 +55,31 @@ class QuestionDetailFragment : Fragment() {
             1 -> questionType.text = "Multiple choice"
             2 -> questionType.text = "True/False"
         }
+
+        when(currentQuestion?.difficulty) {
+            QuestionDifficulty.EASY -> {
+                questionDifficulty.text = "Easy"
+                questionDifficulty.setTextColor(Color.GREEN)
+            }
+            QuestionDifficulty.MEDIUM -> {
+                questionDifficulty.text = "Medium"
+                questionDifficulty.setTextColor(Color.parseColor("#FFA500"))
+            }
+            QuestionDifficulty.HARD -> {
+                questionDifficulty.text = "Hard"
+                questionDifficulty.setTextColor(Color.RED)
+            }
+            else -> {
+                questionDifficulty.text = "Not defined"
+                questionDifficulty.setTextColor(Color.GRAY)
+            }
+        }
+
+        val category = currentQuestion?.category
+        val categoryText = "Category: $category"
+        val spannableString = SpannableString(categoryText)
+        spannableString.setSpan(StyleSpan(Typeface.BOLD), 10, categoryText.length, 0)
+        questionCategory.text = spannableString
 
         currentQuestion?.answers?.forEachIndexed() { index, answer ->
             val answerText = TextView(context)
@@ -71,5 +104,7 @@ class QuestionDetailFragment : Fragment() {
         questionText = binding.textQuestion
         questionType = binding.typeQuestion
         answersGroup = binding.answerGroup
+        questionCategory = binding.categoryQuestion
+        questionDifficulty = binding.difficultyQuestion
     }
 }

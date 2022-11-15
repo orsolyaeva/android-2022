@@ -16,6 +16,10 @@ class ItemService(private var itemRepository: ItemRepository) {
         itemRepository.loadItems(items)
     }
 
+    fun filterQuestions(category: String): ArrayList<Item> {
+        return getAllItems().filter { it.category == category } as ArrayList<Item>
+    }
+
     // select a given number of items from the repository
     fun selectRandomItems(count: Int): ArrayList<Item> {
         items.clear()

@@ -74,10 +74,11 @@ class DataAdapter(
         val currentItem = list[position]
         holder.questionText.text = currentItem.question
         if (holder.questionText.text.length > 50) {
-            holder.questionText.text = holder.questionText.text.subSequence(0, 40).toString() + "..."
+            holder.questionText.text = holder.questionText.text.subSequence(0, 35).toString() + "..."
         }
         holder.answerText.text = currentItem.answers[0]
         holder.answerText.setTextColor(Color.parseColor("#3e9657"))
+        holder.answerText.setTypeface(null, android.graphics.Typeface.BOLD)
         when(currentItem.type) {
             QuestionType.MULTIPLE_CHOICE.ordinal -> holder.answerType.text = "Multiple Choice"
             QuestionType.SINGLE_CHOICE.ordinal -> holder.answerType.text = "Single choice"
@@ -87,7 +88,13 @@ class DataAdapter(
 
     override fun getItemCount() = list.size
 
+    @SuppressLint("NotifyDataSetChanged")
     fun setData(newData: MutableList<Item>) {
         list = newData
+        notifyDataSetChanged()
+    }
+
+    fun getItem(position: Int): Item {
+        return list[position]
     }
 }

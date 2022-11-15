@@ -18,6 +18,8 @@ class QuizViewModel: ViewModel() {
     private val itemService = ItemService()
     private var questions = itemService.selectRandomItems(numberOfQuestions)
     private var allQuestions = MutableLiveData<ArrayList<Item>>()
+    private var questionsFiltered = MutableLiveData<ArrayList<Item>>()
+    private var questionCategories = MutableLiveData<ArrayList<String>>()
     private var countCorrect = 0
     private var countPartiallyCorrect = 0
     private var countPartiallyCorrectPoints = 0.0
@@ -31,6 +33,22 @@ class QuizViewModel: ViewModel() {
 
     private fun startQuiz(): MutableList<Item> {
         itemService.randomizeQuestions()
+
+        for (question in itemService.getAllItems()) {
+           // check if question categories is not empty
+            if (questionCategories.value != null) {
+                // check if question category is not already in the list
+                if (!questionCategories.value!!.contains(question.category)) {
+                    questionCategories.value!!.add(question.category)
+                }
+            } else {
+                questionCategories.value = ArrayList()
+                questionCategories.value!!.add(question.category)
+            }
+        }
+
+
+        Log.d("QUIZ", "questionCategories: ${questionCategories.value}")
 
         Log.d("QuizViewModel", "Questions: ${questions.size}")
         Log.d("QuizViewModel", "Questions: ${questions}")
@@ -75,7 +93,6 @@ class QuizViewModel: ViewModel() {
                 }
             }
             QuestionType.TRUE_FALSE.ordinal -> {
-                // TODO: true/false implementation
                 val userAnswer = currentQuestion.value?.first?.answers?.get(answer[0])
                 if (userAnswer == currentQuestion.value?.first?.correct?.get(0)) {
                     countCorrect++
@@ -140,35 +157,50 @@ class QuizViewModel: ViewModel() {
     }
 
     fun deleteQuestion(position: Int) {
+        val category = allQuestions.value?.get(position)?.category
         itemService.deleteItem(position)
         allQuestions.value = itemService.getAllItems()
+        if (allQuestions.value?.find { it.category == category } == null) {
+            questionCategories.value?.remove(category)
+        }
+    }
+
+    fun getCategoryList() : ArrayList<String> {
+        return questionCategories.value!!
+    }
+
+    fun filterQuestions(category: String) :  LiveData<ArrayList<Item>> {
+        val filteredQuestions = itemService.filterQuestions(category)
+        questionsFiltered.value = filteredQuestions
+        return questionsFiltered
     }
 
     private fun getQuestionFromAPI(): MutableList<Item> {
-        var items = mutableListOf<Item>()
-        viewModelScope.launch {
-            try {
-                Log.d("RESULT_RETRO", "Started loading questions")
-                val response =  RetrofitService.api.getQuestions(3);
-                Log.d("RESULT_RETRO", "Finished loading questions")
-                if (response.isSuccessful) {
-                    val questions = response.body()
-                    items = (questions?.results?.map {
-                        Item(
-                            0,
-                            it.question,
-                            mutableListOf(it.correctAnswer),
-                            mutableListOf(it.correctAnswer).plus(it.incorrectAnswers) as MutableList<String>
-                        )
-                    } as MutableList<Item>?)!!
-
-                    Log.d("RESULT_RETRO", items.toString())
-                }
-            } catch (e: Exception) {
-                Log.d("RESULT_RETRO", "Error: ${e.message}")
-            }
-        }
-
-        return items
+//        var items = mutableListOf<Item>()
+//        viewModelScope.launch {
+//            try {
+//                Log.d("RESULT_RETRO", "Started loading questions")
+//                val response =  RetrofitService.api.getQuestions(3);
+//                Log.d("RESULT_RETRO", "Finished loading questions")
+//                if (response.isSuccessful) {
+//                    val questions = response.body()
+//                    items = (questions?.results?.map {
+//                        Item(
+//                            0,
+//                            it.question,
+//                            it.
+//                            mutableListOf(it.correctAnswer),
+//                            mutableListOf(it.correctAnswer).plus(it.incorrectAnswers) as MutableList<String>
+//                        )
+//                    } as MutableList<Item>?)!!
+//
+//                    Log.d("RESULT_RETRO", items.toString())
+//                }
+//            } catch (e: Exception) {
+//                Log.d("RESULT_RETRO", "Error: ${e.message}")
+//            }
+//        }
+//        return items
+        return mutableListOf()
     }
 }
