@@ -57,24 +57,57 @@ class QuestionAddFragment : Fragment() {
         val currentQuestionType = questionType.selectedItem.toString()
 
         if(currentQuestionType == "Single Choice") {
-            // add 4 answer options
+            // add 4 answer options and a checkbox for the correct answer
             for(i in 0..3) {
                 val answer = EditText(requireContext())
-
-                if (i == 0) {
-                    answer.hint = "Correct Answer"
-                } else {
-                    answer.hint = "Answer $i"
-                }
-
+                answer.hint = "Answer $i"
                 val params = LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT
                 )
-                params.setMargins(0, 0, 0, 30)
                 answer.layoutParams = params
                 answerLayout.addView(answer)
+
+                // add checkbox for the correct answer
+                val correctAnswerCheckbox = CheckBox(requireContext())
+                correctAnswerCheckbox.text = "Correct answer"
+                correctAnswerCheckbox.layoutParams = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                )
+                answerLayout.addView(correctAnswerCheckbox)
             }
+
+            // if one of the answers is checked, unable the other
+            for(i in 0 until answerLayout.childCount) {
+                if(answerLayout.getChildAt(i) is CheckBox) {
+                    val checkBox = answerLayout.getChildAt(i) as CheckBox
+                    checkBox.setOnCheckedChangeListener { _, isChecked ->
+                        if(isChecked) {
+                            for(j in 0 until answerLayout.childCount) {
+                                if(answerLayout.getChildAt(j) is CheckBox) {
+                                    val otherCheckBox = answerLayout.getChildAt(j) as CheckBox
+                                    if(otherCheckBox != checkBox) {
+                                        otherCheckBox.isEnabled = false
+                                    }
+                                }
+                            }
+                        }
+                        // if the checkbox is unchecked, enable the other
+                        else {
+                            for(j in 0 until answerLayout.childCount) {
+                                if(answerLayout.getChildAt(j) is CheckBox) {
+                                    val otherCheckBox = answerLayout.getChildAt(j) as CheckBox
+                                    if(otherCheckBox != checkBox) {
+                                        otherCheckBox.isEnabled = true
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
         }
 
         if (currentQuestionType == "True or False") {
@@ -95,26 +128,62 @@ class QuestionAddFragment : Fragment() {
                 params.setMargins(0, 0, 0, 30)
                 answer.layoutParams = params
                 answerLayout.addView(answer)
+
+                // add checkbox for the correct answer
+                val correctAnswer = CheckBox(requireContext())
+                correctAnswer.text = "Correct Answer"
+                correctAnswer.layoutParams = params
+                answerLayout.addView(correctAnswer)
+            }
+
+            // if one of the answers is checked, unable the other
+            for(i in 0 until answerLayout.childCount) {
+                if(answerLayout.getChildAt(i) is CheckBox) {
+                    val checkBox = answerLayout.getChildAt(i) as CheckBox
+                    checkBox.setOnCheckedChangeListener { _, isChecked ->
+                        if(isChecked) {
+                            for(j in 0 until answerLayout.childCount) {
+                                if(answerLayout.getChildAt(j) is CheckBox) {
+                                    val otherCheckBox = answerLayout.getChildAt(j) as CheckBox
+                                    if(otherCheckBox != checkBox) {
+                                        otherCheckBox.isEnabled = false
+                                    }
+                                }
+                            }
+                        }
+                        // if the checkbox is unchecked, enable the other
+                        else {
+                            for(j in 0 until answerLayout.childCount) {
+                                if(answerLayout.getChildAt(j) is CheckBox) {
+                                    val otherCheckBox = answerLayout.getChildAt(j) as CheckBox
+                                    if(otherCheckBox != checkBox) {
+                                        otherCheckBox.isEnabled = true
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
 
         if (currentQuestionType == "Multiple Choice") {
-            for(i in 0..3) {
-                val answer = EditText(requireContext())
-
-                if (i == 0 || i == 1) {
-                    answer.hint = "Correct Answer"
-                } else {
-                    answer.hint = "Answer ${i - 1}"
-                }
-
-                val params = LinearLayout.LayoutParams(
+            for(i in 1..4) {
+                val answerOption = EditText(requireContext())
+                answerOption.hint = "Answer $i"
+                answerOption.layoutParams = LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT
                 )
-                params.setMargins(0, 0, 0, 30)
-                answer.layoutParams = params
-                answerLayout.addView(answer)
+                answerLayout.addView(answerOption)
+
+                val correctAnswerCheckbox = CheckBox(requireContext())
+                correctAnswerCheckbox.text = "Correct answer"
+                correctAnswerCheckbox.layoutParams = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                )
+                answerLayout.addView(correctAnswerCheckbox)
             }
         }
     }
@@ -143,22 +212,42 @@ class QuestionAddFragment : Fragment() {
 
             // check if all the answers are filled
             for(i in 0 until answerLayout.childCount) {
-                val answer = answerLayout.getChildAt(i) as EditText
+                // check if child is an EditText
+                if(answerLayout.getChildAt(i) is EditText) {
+                    val answer = answerLayout.getChildAt(i) as EditText
 
-                if(answer.text.isEmpty()) {
-                    Snackbar.make(requireView(), "All answers must be filled", Snackbar.LENGTH_SHORT).show()
-                    return@setOnClickListener
+                    if(answer.text.isEmpty()) {
+                        Snackbar.make(requireView(), "All answers must be filled", Snackbar.LENGTH_SHORT).show()
+                        return@setOnClickListener
+                    }
+
+                    answers.add(answer.text.toString())
                 }
-
-                answers.add(answer.text.toString())
             }
 
+            var isCorrectAnswerChecked = false
             var correct = mutableListOf<String>()
 
-            if (questionType.selectedItem.toString() == "Multiple Choice") {
-                correct = mutableListOf(answers[0], answers[1])
-            } else {
-                correct = mutableListOf(answers[0])
+            for(i in 0 until answerLayout.childCount) {
+                // check if given child is a checkbox
+                if(answerLayout.getChildAt(i) is CheckBox) {
+                    val checkbox = answerLayout.getChildAt(i) as CheckBox
+
+                    if(checkbox.isChecked) {
+                        correct.add(answers[i])
+                        isCorrectAnswerChecked = true
+
+                        if(questionType.selectedItem.toString() == "Single Choice" ||
+                                questionType.selectedItem.toString() == "True or False") {
+                            break
+                        }
+                    }
+                }
+            }
+
+            if(!isCorrectAnswerChecked) {
+                Snackbar.make(requireView(), "At least one correct answer must be checked", Snackbar.LENGTH_SHORT).show()
+                return@setOnClickListener
             }
 
             val item = Item(
@@ -180,8 +269,17 @@ class QuestionAddFragment : Fragment() {
             questionCategory.text.clear()
 
             for(i in 0 until answerLayout.childCount) {
-                val answer = answerLayout.getChildAt(i) as EditText
-                answer.text.clear()
+                if(answerLayout.getChildAt(i) is EditText) {
+                    val answer = answerLayout.getChildAt(i) as EditText
+                    answer.text.clear()
+                }
+
+               if(questionType.selectedItem.toString() == "Multiple Choice") {
+                   if(answerLayout.getChildAt(i) is CheckBox) {
+                       val checkbox = answerLayout.getChildAt(i) as CheckBox
+                       checkbox.isChecked = false
+                   }
+               }
             }
         }
 
