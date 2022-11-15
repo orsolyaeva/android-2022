@@ -154,6 +154,10 @@ class QuizViewModel: ViewModel() {
     fun addQuestion(item: Item) {
         itemService.addItem(item)
         allQuestions.value = itemService.getAllItems()
+
+        if (!questionCategories.value!!.contains(item.category)) {
+            questionCategories.value!!.add(item.category)
+        }
     }
 
     fun deleteQuestion(position: Int) {
