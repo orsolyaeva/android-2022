@@ -3,15 +3,25 @@ package com.example.quizapp
 import android.app.AlertDialog
 import  androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.Gravity
 import androidx.activity.viewModels
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.coroutineScope
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.findNavController
+import com.example.quizapp.models.Item
+import com.example.quizapp.models.QuestionDifficulty
+import com.example.quizapp.models.QuestionType
+import com.example.quizapp.repositories.ItemRepository
+import com.example.quizapp.services.ItemService
+import com.example.quizapp.services.RetrofitService
 import com.example.quizapp.viewModels.QuizViewModel
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.navigation.NavigationView
+import kotlinx.coroutines.launch
 
 const val TAG = "MainActivity"
 
@@ -27,7 +37,46 @@ class MainActivity : AppCompatActivity() {
         initViews()
         initListeners()
 
+
         supportActionBar?.hide()
+
+        var items = mutableListOf<Item>()
+        lifecycle.coroutineScope.launch {
+            try {
+                Log.d("QuizViewModelAPI", "Started loading questions")
+                val response =  RetrofitService.api.getQuestions(30);
+                Log.d("QuizViewModelAPI", "Finished loading questions")
+                if (response.isSuccessful) {
+                    val questions = response.body()
+                    items = (questions?.results?.map {
+                        Item(
+                            type = when(it.type) {
+                                "multiple" -> QuestionType.SINGLE_CHOICE.ordinal
+                                "boolean" -> QuestionType.TRUE_FALSE.ordinal
+                                else -> QuestionType.SINGLE_CHOICE.ordinal
+                            },
+                            question = it.question,
+                            answers = it.incorrectAnswers.toMutableList().apply { add(it.correctAnswer) },
+                            correct = mutableListOf(it.correctAnswer),
+                            category = it.category,
+                            difficulty = when(it.difficulty) {
+                                "easy" -> QuestionDifficulty.EASY
+                                "medium" -> QuestionDifficulty.MEDIUM
+                                "hard" -> QuestionDifficulty.HARD
+                                else -> QuestionDifficulty.EASY
+                            } as QuestionDifficulty
+                        )
+                    } as MutableList<Item>?)!!
+
+                    Log.d("QuizViewModelAPI", items.toString())
+
+                    Log.d(TAG, "items: $items")
+                    ItemRepository.loadItems(items)
+                }
+            } catch (e: Exception) {
+                Log.d("QuizViewModelAPI", "Error: ${e.message}")
+            }
+        }
     }
 
     private fun initViews() {

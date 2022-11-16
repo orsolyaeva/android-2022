@@ -6,7 +6,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.quizapp.models.Item
+import com.example.quizapp.models.QuestionDifficulty
 import com.example.quizapp.models.QuestionType
+import com.example.quizapp.repositories.ItemRepository
 import com.example.quizapp.services.ItemService
 import com.example.quizapp.services.RetrofitService
 import kotlinx.coroutines.launch
@@ -15,8 +17,8 @@ import kotlin.math.roundToInt
 
 class QuizViewModel: ViewModel() {
     private var numberOfQuestions = 3
-    private val itemService = ItemService()
-    private var questions = itemService.selectRandomItems(numberOfQuestions)
+    private var itemService = ItemService(ItemRepository)
+    private var questions: ArrayList<Item> = itemService.selectRandomItems(numberOfQuestions)
     private var allQuestions = MutableLiveData<ArrayList<Item>>()
     private var questionsFiltered = MutableLiveData<ArrayList<Item>>()
     private var questionCategories = MutableLiveData<ArrayList<String>>()
@@ -28,6 +30,7 @@ class QuizViewModel: ViewModel() {
         MutableLiveData<Pair<Item?, Boolean>>()
 
     init {
+        Log.d("QuizViewModelAPI", "AJ: ${itemService.getAllItems()}")
         currentQuestion.value = Pair(itQuestion.next(), false)
     }
 
@@ -180,31 +183,41 @@ class QuizViewModel: ViewModel() {
     }
 
     private fun getQuestionFromAPI(): MutableList<Item> {
-//        var items = mutableListOf<Item>()
-//        viewModelScope.launch {
-//            try {
-//                Log.d("RESULT_RETRO", "Started loading questions")
-//                val response =  RetrofitService.api.getQuestions(3);
-//                Log.d("RESULT_RETRO", "Finished loading questions")
-//                if (response.isSuccessful) {
-//                    val questions = response.body()
-//                    items = (questions?.results?.map {
-//                        Item(
-//                            0,
-//                            it.question,
-//                            it.
-//                            mutableListOf(it.correctAnswer),
-//                            mutableListOf(it.correctAnswer).plus(it.incorrectAnswers) as MutableList<String>
-//                        )
-//                    } as MutableList<Item>?)!!
-//
-//                    Log.d("RESULT_RETRO", items.toString())
-//                }
-//            } catch (e: Exception) {
-//                Log.d("RESULT_RETRO", "Error: ${e.message}")
-//            }
-//        }
-//        return items
-        return mutableListOf()
+        var items = mutableListOf<Item>()
+        viewModelScope.launch {
+            try {
+                Log.d("QuizViewModelAPI", "Started loading questions")
+                val response =  RetrofitService.api.getQuestions(3);
+                Log.d("QuizViewModelAPI", "Finished loading questions")
+                if (response.isSuccessful) {
+                    val questions = response.body()
+                    items = (questions?.results?.map {
+                        Item(
+                            type = when(it.type) {
+                                "multiple" -> QuestionType.SINGLE_CHOICE.ordinal
+                                "boolean" -> QuestionType.TRUE_FALSE.ordinal
+                                else -> QuestionType.SINGLE_CHOICE.ordinal
+                            },
+                            question = it.question,
+                            answers = it.incorrectAnswers.toMutableList().apply { add(it.correctAnswer) },
+                            correct = mutableListOf(it.correctAnswer),
+                            category = it.category,
+                            difficulty = when(it.difficulty) {
+                                "easy" -> QuestionDifficulty.EASY
+                                "medium" -> QuestionDifficulty.MEDIUM
+                                "hard" -> QuestionDifficulty.HARD
+                                else -> QuestionDifficulty.EASY
+                            } as QuestionDifficulty
+                        )
+                    } as MutableList<Item>?)!!
+
+                    Log.d("QuizViewModelAPI", items.toString())
+                }
+            } catch (e: Exception) {
+                Log.d("QuizViewModelAPI", "Error: ${e.message}")
+            }
+        }
+        return items
+//        return mutableListOf()
     }
 }

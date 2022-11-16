@@ -9,10 +9,9 @@ import kotlinx.coroutines.CoroutineScope
 class ItemService(private var itemRepository: ItemRepository) {
     private var items =  ArrayList<Item>()
 
-    constructor() : this(ItemRepository())
-
     fun loadItems(items: ArrayList<Item>) {
-        this.items = items
+        Log.d("QuizViewModelAPI", "ItemService init")
+        Log.d("ItemService", "ItemService items: $items")
         itemRepository.loadItems(items)
     }
 
@@ -23,6 +22,7 @@ class ItemService(private var itemRepository: ItemRepository) {
     // select a given number of items from the repository
     fun selectRandomItems(count: Int): ArrayList<Item> {
         items.clear()
+
         var counter = count
 
         // if the given number is greater than the number of items in the repository or if its negative, return all items
