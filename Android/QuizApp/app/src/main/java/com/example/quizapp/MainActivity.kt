@@ -12,10 +12,12 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.coroutineScope
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.findNavController
+import com.example.quizapp.interfaces.QuestionEndpoints
 import com.example.quizapp.models.Item
 import com.example.quizapp.models.QuestionDifficulty
 import com.example.quizapp.models.QuestionType
 import com.example.quizapp.repositories.ItemRepository
+import com.example.quizapp.repositories.QuestionRepository
 import com.example.quizapp.services.ItemService
 import com.example.quizapp.services.RetrofitService
 import com.example.quizapp.viewModels.QuizViewModel
@@ -37,14 +39,15 @@ class MainActivity : AppCompatActivity() {
         initViews()
         initListeners()
 
-
         supportActionBar?.hide()
+
+        ItemRepository.loadItems(com.example.quizapp.models.items)
 
         var items = mutableListOf<Item>()
         lifecycle.coroutineScope.launch {
             try {
                 Log.d("QuizViewModelAPI", "Started loading questions")
-                val response =  RetrofitService.api.getQuestions(30);
+                val response = RetrofitService.api.getQuestions(10)
                 Log.d("QuizViewModelAPI", "Finished loading questions")
                 if (response.isSuccessful) {
                     val questions = response.body()
@@ -72,6 +75,8 @@ class MainActivity : AppCompatActivity() {
 
                     Log.d(TAG, "items: $items")
                     ItemRepository.loadItems(items)
+                } else {
+                    Log.d("QuizViewModelAPI", "Error: ${response.errorBody()}")
                 }
             } catch (e: Exception) {
                 Log.d("QuizViewModelAPI", "Error: ${e.message}")

@@ -30,7 +30,6 @@ class QuizViewModel: ViewModel() {
         MutableLiveData<Pair<Item?, Boolean>>()
 
     init {
-        Log.d("QuizViewModelAPI", "AJ: ${itemService.getAllItems()}")
         currentQuestion.value = Pair(itQuestion.next(), false)
     }
 

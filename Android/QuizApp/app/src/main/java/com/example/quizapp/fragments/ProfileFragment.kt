@@ -76,7 +76,14 @@ class ProfileFragment : Fragment() {
         selectPhotoButton = binding.choosePhotoButton
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private fun initListeners() {
+        userName.setOnTouchListener() { v, event ->
+            userName.isFocusable = true
+            userName.isFocusableInTouchMode = true
+            false
+        }
+
         saveButton.setOnClickListener {
             userViewModel.setName(userName.text.toString())
             sharedPref.edit().putString("username", userName.text.toString()).apply()
@@ -84,7 +91,8 @@ class ProfileFragment : Fragment() {
 
             Snackbar.make(binding.root, "Changes saved", Snackbar.LENGTH_SHORT).show()
 
-            userName.clearFocus()
+            userName.isFocusable = false
+            userName.isFocusableInTouchMode = false
         }
 
         selectPhotoButton.setOnClickListener {

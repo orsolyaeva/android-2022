@@ -6,9 +6,8 @@ import com.example.quizapp.services.RetrofitService
 import retrofit2.Response
 
 object QuestionRepository {
-    suspend fun getQuestions(amount: Int):Response<BaseData> {
+    suspend fun getQuestions(amount: Int): Response<BaseData> {
         // get question synchronously using retrofit execute method
-        val result = RetrofitService.api.getQuestions(amount)
-        return result
+        return RetrofitService.api.getQuestions(amount)
     }
 }

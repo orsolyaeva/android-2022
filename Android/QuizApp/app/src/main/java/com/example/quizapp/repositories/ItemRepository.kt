@@ -6,7 +6,11 @@ object ItemRepository {
     private var items =  mutableListOf<Item>()
 
     fun loadItems(items: MutableList<Item>) {
-        this.items = items
+        if(this.items.isEmpty()) {
+            this.items = com.example.quizapp.models.items
+        } else {
+            this.items = items
+        }
     }
 
     fun randomItem(): Item {

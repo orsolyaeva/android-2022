@@ -20,14 +20,21 @@ import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.coroutineScope
 import androidx.navigation.fragment.findNavController
 import com.example.quizapp.R
 import com.example.quizapp.TAG
 import com.example.quizapp.databinding.FragmentQuizStartBinding
+import com.example.quizapp.models.Item
+import com.example.quizapp.models.QuestionDifficulty
+import com.example.quizapp.models.QuestionType
 import com.example.quizapp.models.User
+import com.example.quizapp.repositories.ItemRepository
+import com.example.quizapp.services.RetrofitService
 import com.example.quizapp.viewModels.QuizViewModel
 import com.example.quizapp.viewModels.UserViewModel
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.launch
 
 /**
  * A simple [Fragment] subclass.
@@ -96,7 +103,6 @@ class QuizStartFragment : Fragment() {
         Log.d("QuizStartFragment", "onCreateView: ")
         binding = FragmentQuizStartBinding.inflate(inflater, container, false)
         sharedPref = requireActivity().getPreferences(Context.MODE_PRIVATE)
-
         viewModel.resetQuiz()
 
         return binding.root
@@ -107,7 +113,6 @@ class QuizStartFragment : Fragment() {
         getStartedButton = binding.startButton
         imageButton = binding.selectImageButton
         userName = binding.userName
-        userAge = binding.userAge
         userAvatar = binding.userAvatar
     }
 
@@ -130,20 +135,6 @@ class QuizStartFragment : Fragment() {
         Log.i("Info", "Button Pressed");
 
         val userNameT = userName.text.toString()
-//        val userAgeT = userAge.text.toString()
-
-        /*
-        if (userAgeT.toIntOrNull() == null) {
-//            Snackbar.make(, "Please enter a valid age!", Snackbar.LENGTH_SHORT).show()
-            Snackbar.make(binding.root, "Please enter a valid age!", Snackbar.LENGTH_SHORT).show()
-            return
-        }
-
-        if (userAgeT.toInt() < 0 || userAgeT.toInt() > 100) {
-            Snackbar.make(binding.root, "Please enter a valid age", Snackbar.LENGTH_SHORT).show()
-            return
-        }
-        */
 
         if (userNameT.isEmpty()) {
             Snackbar.make(binding.root, "Please enter your name", Snackbar.LENGTH_SHORT).show()

@@ -82,5 +82,9 @@
         android:id="@+id/questionAddFragment"
         android:name="com.example.quizapp.fragments.QuestionAddFragment"
         android:label="fragment_question_add"
-        tools:layout="@layout/fragment_question_add" />
+        tools:layout="@layout/fragment_question_add" >
+        <action
+            android:id="@+id/action_questionAddFragment_to_homeFragment"
+            app:destination="@id/homeFragment" />
+    </fragment>
 </navigation>
