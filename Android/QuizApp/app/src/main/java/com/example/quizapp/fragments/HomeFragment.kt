@@ -1,29 +1,24 @@
 package com.example.quizapp.fragments
 
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import androidx.lifecycle.coroutineScope
 import androidx.navigation.fragment.findNavController
 import com.example.quizapp.R
-import com.example.quizapp.TAG
 import com.example.quizapp.databinding.FragmentHomeBinding
-import com.example.quizapp.models.Item
-import com.example.quizapp.models.QuestionDifficulty
-import com.example.quizapp.models.QuestionType
-import com.example.quizapp.repositories.ItemRepository
-import com.example.quizapp.services.RetrofitService
-import kotlinx.coroutines.launch
 
 class HomeFragment : Fragment() {
     private lateinit var binding: FragmentHomeBinding
     private lateinit var startQuizButton: Button
     private lateinit var readQuestionsButton: Button
     private lateinit var addQuestionButton: Button
+
+    companion object {
+        const val TAG = "HomeFragment"
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

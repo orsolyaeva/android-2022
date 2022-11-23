@@ -2,9 +2,11 @@ package com.example.quizapp.repositories
 
 import com.example.quizapp.models.Item
 
+// item repository stores all the items in the app and provides methods to access them
 object ItemRepository {
     private var items =  mutableListOf<Item>()
 
+    // add item to the list
     fun loadItems(items: MutableList<Item>) {
         if(this.items.isEmpty()) {
             this.items = com.example.quizapp.models.items
@@ -13,12 +15,9 @@ object ItemRepository {
         }
     }
 
+    // get a random item from the list
     fun randomItem(): Item {
         return items.random()
-    }
-
-    fun save(item: Item) {
-        items.add(item)
     }
 
     fun size() : Int {

@@ -187,7 +187,7 @@ val items : MutableList<Item> = mutableListOf(
             "fun x(): Int {}",
             "fun x: Int() {}"
         ),
-        correct = mutableListOf( "fun x() {}",  "fun x(): Int {}",)
+        correct = mutableListOf( "fun x() {}",  "fun x(): Int {}")
     )
 )
 
@@ -223,7 +223,7 @@ val items_old : MutableList<Item> = mutableListOf(
             "fun x(): Int {}",
             "fun x: Int() {}"
         ),
-        correct = mutableListOf( "fun x() {}",  "fun x(): Int {}",)
+        correct = mutableListOf( "fun x() {}",  "fun x(): Int {}")
     ),
     Item (
         type = QuestionType.SINGLE_CHOICE.ordinal,

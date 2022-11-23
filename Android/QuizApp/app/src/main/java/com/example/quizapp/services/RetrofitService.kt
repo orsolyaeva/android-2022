@@ -1,9 +1,6 @@
 package com.example.quizapp.services
-import android.util.Log
 import com.example.quizapp.constants.Constants
 import com.example.quizapp.interfaces.QuestionEndpoints
-import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
 
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory

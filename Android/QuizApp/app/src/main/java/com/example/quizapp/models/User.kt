@@ -2,7 +2,7 @@ package com.example.quizapp.models
 
 import android.net.Uri
 
-class User(var name: String?, var high_score: Double = 0.0, var picture: Uri? = null) {
+class User(var name: String?, private var high_score: Double = 0.0, var picture: Uri? = null) {
     // change name of the user
     fun changeName(name: String) {
         this.name = name

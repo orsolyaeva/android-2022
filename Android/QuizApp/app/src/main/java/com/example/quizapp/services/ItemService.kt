@@ -3,17 +3,10 @@ package com.example.quizapp.services
 import android.util.Log
 import com.example.quizapp.repositories.ItemRepository
 import com.example.quizapp.models.Item
-import com.example.quizapp.models.QuestionType
-import kotlinx.coroutines.CoroutineScope
+
 
 class ItemService(private var itemRepository: ItemRepository) {
     private var items =  ArrayList<Item>()
-
-    fun loadItems(items: ArrayList<Item>) {
-        Log.d("QuizViewModelAPI", "ItemService init")
-        Log.d("ItemService", "ItemService items: $items")
-        itemRepository.loadItems(items)
-    }
 
     fun filterQuestions(category: String): ArrayList<Item> {
         return getAllItems().filter { it.category == category } as ArrayList<Item>

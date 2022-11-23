@@ -14,8 +14,6 @@ import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.ViewModelProvider
-import com.example.quizapp.R
 import com.example.quizapp.databinding.FragmentQuestionDetailBinding
 import com.example.quizapp.models.Item
 import com.example.quizapp.models.QuestionDifficulty
@@ -23,16 +21,22 @@ import com.example.quizapp.viewModels.QuizViewModel
 
 class QuestionDetailFragment : Fragment() {
     private var currentQuestion: Item? = null
-    private lateinit var binding: FragmentQuestionDetailBinding
     private lateinit var questionText: TextView
     private lateinit var questionCategory: TextView
     private lateinit var questionDifficulty: TextView
     private lateinit var questionType: TextView
     private lateinit var answersGroup: LinearLayout
+
+    private lateinit var binding: FragmentQuestionDetailBinding
     private val viewModel: QuizViewModel by activityViewModels()
+
+    companion object {
+        const val TAG = "QuestionDetailFragment"
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // Get the current question from the view model
         arguments?.let {
             val id = it.getInt("id")
             currentQuestion = viewModel.getAllQuestions().value?.get(id)
@@ -49,7 +53,7 @@ class QuestionDetailFragment : Fragment() {
         initViews()
 
         questionText.text = currentQuestion?.question
-        Log.d("QuestionDetailFragment", "questionText = ${currentQuestion?.question}")
+        Log.d(TAG, "questionText = ${currentQuestion?.question}")
         when(currentQuestion?.type) {
             0 -> questionType.text = "Single choice"
             1 -> questionType.text = "Multiple choice"
@@ -81,7 +85,7 @@ class QuestionDetailFragment : Fragment() {
         spannableString.setSpan(StyleSpan(Typeface.BOLD), 10, categoryText.length, 0)
         questionCategory.text = spannableString
 
-        currentQuestion?.answers?.forEachIndexed() { index, answer ->
+        currentQuestion?.answers?.forEachIndexed { _, answer ->
             val answerText = TextView(context)
             answerText.text = answer
             val params = LinearLayout.LayoutParams(

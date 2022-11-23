@@ -20,28 +20,31 @@ import com.example.quizapp.viewModels.UserViewModel
 import com.google.android.material.snackbar.Snackbar
 
 class ProfileFragment : Fragment() {
-    private lateinit var binding: FragmentProfileBinding
-    private lateinit var userName : EditText
-    private lateinit var highScore : TextView
-    private lateinit var saveButton : Button
+    private lateinit var userName: EditText
+    private lateinit var highScore: TextView
     private lateinit var profilePicture: ImageView
+    private lateinit var saveButton: Button
     private lateinit var selectPhotoButton: Button
-    private lateinit var sharedPref : SharedPreferences
     private lateinit var imageUri: Uri
+
+    private lateinit var binding: FragmentProfileBinding
+    private lateinit var sharedPref: SharedPreferences
     private val userViewModel: UserViewModel by activityViewModels()
 
-    private val getImage = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
-        uri?.let { it ->
-            profilePicture.setImageURI(it)
-            imageUri = it
-            userViewModel.setProfilePicture(it)
-//            sharedPref.edit().putString("profilePicture", it.toString()).apply()
-        }
+    companion object {
+        const val TAG = "ProfileFragment"
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
+    // callback for the image picker
+    private val getImage =
+        registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+            uri?.let { it ->
+                profilePicture.setImageURI(it)
+                imageUri = it
+                userViewModel.setProfilePicture(it)
+//            sharedPref.edit().putString("profilePicture", it.toString()).apply()
+            }
+        }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -59,7 +62,7 @@ class ProfileFragment : Fragment() {
         initViews()
         initListeners()
 
-        if(userViewModel.getProfilePicture() != null) {
+        if (userViewModel.getProfilePicture() != null) {
             profilePicture.setImageURI(userViewModel.getProfilePicture())
         }
 //        profilePicture.setImageURI(imageUri)
@@ -78,26 +81,32 @@ class ProfileFragment : Fragment() {
 
     @SuppressLint("ClickableViewAccessibility")
     private fun initListeners() {
-        userName.setOnTouchListener() { v, event ->
+        // focus on the edit text when the user clicks on it
+        userName.setOnTouchListener { _, _ ->
             userName.isFocusable = true
             userName.isFocusableInTouchMode = true
             false
         }
 
+        // save the user's name and high score and get edit text out of focus
         saveButton.setOnClickListener {
-            userViewModel.setName(userName.text.toString())
-            sharedPref.edit().putString("username", userName.text.toString()).apply()
-            userName.hint = userName.text.toString()
+            if(userName.text.toString() == "") {
+                Snackbar.make(requireView(), "Please enter a valid name", Snackbar.LENGTH_SHORT).show()
+            } else {
+                userViewModel.setName(userName.text.toString())
+                sharedPref.edit().putString("username", userName.text.toString()).apply()
+                userName.hint = userName.text.toString()
 
-            Snackbar.make(binding.root, "Changes saved", Snackbar.LENGTH_SHORT).show()
+                Snackbar.make(binding.root, "Changes saved", Snackbar.LENGTH_SHORT).show()
+            }
 
             userName.isFocusable = false
             userName.isFocusableInTouchMode = false
         }
 
+        // open the image picker
         selectPhotoButton.setOnClickListener {
             getImage.launch("image/*")
         }
     }
-
 }

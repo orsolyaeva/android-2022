@@ -1,5 +1,6 @@
 package com.example.quizapp.fragments
 
+import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.Context
 import android.os.Bundle
@@ -29,8 +30,8 @@ class QuestionAddFragment : Fragment() {
     private lateinit var binding: FragmentQuestionAddBinding
     private val viewModel: QuizViewModel by activityViewModels()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    companion object {
+        const val TAG = "QuestionAddFragment"
     }
 
     override fun onCreateView(
@@ -47,6 +48,7 @@ class QuestionAddFragment : Fragment() {
         initViews()
         initListeners()
 
+        // create spinner to select question type
         val questionTypes = mutableListOf("Single Choice", "Multiple Choice", "True or False")
         val questionTypeAdapter = ArrayAdapter(
             requireContext(),
@@ -59,11 +61,13 @@ class QuestionAddFragment : Fragment() {
         generateAnswerLayout()
     }
 
+    @SuppressLint("SetTextI18n")
     private fun generateAnswerLayout() {
+        // get current selected question type
         val currentQuestionType = questionType.selectedItem.toString()
 
         if(currentQuestionType == "Single Choice") {
-            // add 4 answer options and a checkbox for the correct answer
+            // add 4 answer options and a checkboxes to mark the correct answer
             for(i in 0..3) {
                 val answer = EditText(requireContext())
                 answer.hint = "Answer $i"
@@ -84,7 +88,7 @@ class QuestionAddFragment : Fragment() {
                 answerLayout.addView(correctAnswerCheckbox)
             }
 
-            // if one of the answers is checked, unable the other
+            // if one of the answers is checked, unable the others
             for(i in 0 until answerLayout.childCount) {
                 if(answerLayout.getChildAt(i) is CheckBox) {
                     val checkBox = answerLayout.getChildAt(i) as CheckBox
@@ -206,11 +210,13 @@ class QuestionAddFragment : Fragment() {
         addQuestionButton.setOnClickListener {
             val answers = mutableListOf<String>()
 
+            // check if the question category is empty
             if(questionCategory.text.isEmpty()) {
                 Snackbar.make(requireView(), "Category cannot be empty", Snackbar.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
+            // check if the question is empty
             if(question.text.isEmpty()) {
                 Snackbar.make(requireView(), "Question cannot be empty", Snackbar.LENGTH_SHORT).show()
                 return@setOnClickListener
@@ -218,7 +224,7 @@ class QuestionAddFragment : Fragment() {
 
             // check if all the answers are filled
             for(i in 0 until answerLayout.childCount) {
-                // check if child is an EditText
+                // check if child is an EditText thereby checking if it is an answer
                 if(answerLayout.getChildAt(i) is EditText) {
                     val answer = answerLayout.getChildAt(i) as EditText
 
@@ -231,16 +237,17 @@ class QuestionAddFragment : Fragment() {
                 }
             }
 
-            Log.d("AddQuestionFragment", "Answers: $answers")
+            Log.d(TAG, "Answers: $answers")
 
             var isCorrectAnswerChecked = false
-            var correct = mutableListOf<String>()
+            val correct = mutableListOf<String>()
 
             for(i in 0 until answerLayout.childCount) {
                 // check if given child is a checkbox
                 if(answerLayout.getChildAt(i) is CheckBox) {
                     val checkbox = answerLayout.getChildAt(i) as CheckBox
 
+                    // if is checked, add the answer to the correct list
                     if(checkbox.isChecked) {
                         correct.add(answers[(i-1)/2])
                         isCorrectAnswerChecked = true
@@ -276,6 +283,7 @@ class QuestionAddFragment : Fragment() {
             question.text.clear()
             questionCategory.text.clear()
 
+            // clear the answer layout
             for(i in 0 until answerLayout.childCount) {
                 if(answerLayout.getChildAt(i) is EditText) {
                     val answer = answerLayout.getChildAt(i) as EditText
@@ -296,6 +304,7 @@ class QuestionAddFragment : Fragment() {
             }
         }
 
+        // add listener to the question type spinner to change the layout of the answers
         questionType.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                 answerLayout.removeAllViews()
@@ -308,9 +317,10 @@ class QuestionAddFragment : Fragment() {
         }
     }
 
+    // handle the back button press
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        Log.d("QuestionFragment", "onAttach: ")
+        Log.d(TAG, "onAttach: ")
         val callback : OnBackPressedCallback = object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 val builder = AlertDialog.Builder(requireContext())

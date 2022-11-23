@@ -19,35 +19,19 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.coroutineScope
 import androidx.navigation.fragment.findNavController
 import com.example.quizapp.R
-import com.example.quizapp.TAG
 import com.example.quizapp.databinding.FragmentQuizStartBinding
-import com.example.quizapp.models.Item
-import com.example.quizapp.models.QuestionDifficulty
-import com.example.quizapp.models.QuestionType
-import com.example.quizapp.models.User
-import com.example.quizapp.repositories.ItemRepository
-import com.example.quizapp.services.RetrofitService
 import com.example.quizapp.viewModels.QuizViewModel
 import com.example.quizapp.viewModels.UserViewModel
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.coroutines.launch
 
-/**
- * A simple [Fragment] subclass.
- * Use the [QuizStartFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 
 class QuizStartFragment : Fragment() {
     private lateinit var contactButton: Button
     private lateinit var getStartedButton: Button
     private lateinit var imageButton: Button
     private lateinit var userName : EditText
-    private lateinit var userAge: EditText
     private lateinit var userAvatar: ImageView
 
     private lateinit var sharedPref: SharedPreferences
@@ -55,7 +39,12 @@ class QuizStartFragment : Fragment() {
     private val viewModel: QuizViewModel by activityViewModels()
     private val userViewModel: UserViewModel by activityViewModels()
 
+    companion object {
+        const val TAG = "QuizStartFragment"
+    }
+
     @RequiresApi(Build.VERSION_CODES.O)
+    // contact picker activity
     private val getContent = registerForActivityResult(ActivityResultContracts.PickContact()) { uri ->
         val resolver = requireActivity().contentResolver
         val cursor: Cursor? = resolver.query(uri!!, null, null, null)
@@ -68,6 +57,7 @@ class QuizStartFragment : Fragment() {
         }
     }
 
+    // image picker activity
     private val getImage = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
         uri?.let { it ->
             val userAvatar = binding.userAvatar
@@ -80,16 +70,18 @@ class QuizStartFragment : Fragment() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        Log.d("QuizStartFragment", "onViewCreated: ")
+        Log.d(TAG, "onViewCreated: ")
         super.onViewCreated(view, savedInstanceState)
 
         initViews()
         initListeners()
 
+        // if user name is already saved in shared preferences, set it to the edit text
         if (sharedPref.contains("username")) {
             userName.setText(sharedPref.getString("username", ""))
         }
 
+        // if user profile picture is already saved in shared preferences, set it to the image view
         if(userViewModel.getProfilePicture() != null) {
             userAvatar.setImageURI(userViewModel.getProfilePicture())
         }
@@ -100,7 +92,7 @@ class QuizStartFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        Log.d("QuizStartFragment", "onCreateView: ")
+        Log.d(TAG, "onCreateView: ")
         binding = FragmentQuizStartBinding.inflate(inflater, container, false)
         sharedPref = requireActivity().getPreferences(Context.MODE_PRIVATE)
         viewModel.resetQuiz()
@@ -132,7 +124,7 @@ class QuizStartFragment : Fragment() {
     }
 
     private fun onButtonClicked() {
-        Log.i("Info", "Button Pressed");
+        Log.i(TAG, "Button Pressed")
 
         val userNameT = userName.text.toString()
 
@@ -142,6 +134,7 @@ class QuizStartFragment : Fragment() {
             // get username from shared preferences
             val username = sharedPref.getString("username", null)
 
+            // if user name is changed, reset the quiz
             if (username != userNameT) {
                 with (sharedPref.edit()) {
                     putFloat("highScore", 0.0F)

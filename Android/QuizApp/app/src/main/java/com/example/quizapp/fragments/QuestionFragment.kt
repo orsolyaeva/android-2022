@@ -22,20 +22,19 @@ import com.example.quizapp.models.QuestionType
 import com.example.quizapp.viewModels.QuizViewModel
 
 
-/**
- * A simple [Fragment] subclass.
- * Use the [QuestionFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class QuestionFragment : Fragment() {
-    private lateinit var binding: FragmentQuestionBinding
     private lateinit var questionText : TextView
     private lateinit var nextButton : Button
     private lateinit var radioGroup : RadioGroup
-    private lateinit var spinner : Spinner
-    private lateinit var sharedPref : SharedPreferences
     private var userAnswers = mutableListOf<Int>()
+
+    private lateinit var binding: FragmentQuestionBinding
+    private lateinit var sharedPref : SharedPreferences
     private val viewModel: QuizViewModel by activityViewModels()
+
+    companion object {
+        const val TAG = "QuestionFragment"
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -45,7 +44,7 @@ class QuestionFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.d("QuestionFragment", "onCreate: ")
+        Log.d(TAG, "onCreate: ")
         sharedPref = requireActivity().getPreferences(Context.MODE_PRIVATE)
         binding = FragmentQuestionBinding.inflate(layoutInflater)
         initViews()
@@ -57,13 +56,14 @@ class QuestionFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        Log.d("QuestionFragment", "onCreateView: ")
+        Log.d(TAG, "onCreateView: ")
         binding = FragmentQuestionBinding.inflate(inflater, container, false)
 
+        // observe the current question and update the UI accordingly
         viewModel.currentQuestion.observe(requireActivity()) { (question, isLast) ->
             binding.questionText.text = question?.question
 
-            handleSingleMultipleChoice(question)
+            handleQuestion(question)
 
             if(isLast) {
                 nextButton.text = "Submit"
@@ -78,7 +78,7 @@ class QuestionFragment : Fragment() {
         return binding.root
     }
 
-    private fun handleSingleMultipleChoice(question: Item?) {
+    private fun handleQuestion(question: Item?) {
         val numberOptions = question?.answers?.size ?: 0
 
         radioGroup = RadioGroup(requireContext())
@@ -93,6 +93,7 @@ class QuestionFragment : Fragment() {
         params.bottomToTop = R.id.nextQuestionButton
         radioGroup.layoutParams = params
 
+        // check question type and add answer groups accordingly
         if (question?.type == QuestionType.SINGLE_CHOICE.ordinal || question?.type == QuestionType.TRUE_FALSE.ordinal) {
             for (i in 0 until numberOptions) {
                 val radioButton = RadioButton(requireContext())
@@ -115,11 +116,12 @@ class QuestionFragment : Fragment() {
     }
 
     private fun initViews() {
-        Log.d("QuestionFragment", "initViews: ")
+        Log.d(TAG, "initViews: ")
         questionText = binding.questionText
         nextButton = binding.nextQuestionButton
     }
 
+    // collect the user's answers and add them to the list
     private fun collectAnswers(questionType: Int): Boolean {
         userAnswers.clear()
         when(questionType) {
@@ -157,7 +159,7 @@ class QuestionFragment : Fragment() {
     }
 
     private fun initListeners() {
-        Log.d("QuestionFragment", "initListeners: ")
+        Log.d(TAG, "initListeners: ")
         nextButton.setOnClickListener {
             if(viewModel.currentQuestion.value?.first?.type?.let { it1 -> collectAnswers(it1) } == false) {
                 return@setOnClickListener
@@ -170,9 +172,10 @@ class QuestionFragment : Fragment() {
         }
     }
 
+    // handle the back button press to prevent the user from going back to the previous question
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        Log.d("QuestionFragment", "onAttach: ")
+        Log.d(TAG, "onAttach: ")
         val callback : OnBackPressedCallback = object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 val builder = AlertDialog.Builder(requireContext())
@@ -180,7 +183,7 @@ class QuestionFragment : Fragment() {
                 builder.setMessage("Are you sure you want to end the quiz?")
                 builder.setPositiveButton("Yes") { _, _ ->
                     collectAnswers(viewModel.currentQuestion.value?.first?.type ?: 0)
-                    Log.d("QuestionFragment", "handleOnBackPressed: $userAnswers")
+                    Log.d(TAG, "handleOnBackPressed: $userAnswers")
                     viewModel.checkAnswer(userAnswers)
                     findNavController().navigate(R.id.action_questionFragment_to_quizEndFragment)
                 }

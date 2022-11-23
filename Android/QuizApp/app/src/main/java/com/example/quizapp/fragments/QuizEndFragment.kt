@@ -12,29 +12,28 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.quizapp.R
 import com.example.quizapp.databinding.FragmentQuizEndBinding
 import com.example.quizapp.viewModels.QuizViewModel
 import com.example.quizapp.viewModels.UserViewModel
 
-/**
- * A simple [Fragment] subclass.
- * Use the [QuizEndFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 
 class QuizEndFragment : Fragment() {
-    private lateinit var binding: FragmentQuizEndBinding
     private lateinit var scoreText : TextView
-    private lateinit var tryAgainButton : Button
     private lateinit var correctNumber: TextView
     private lateinit var incorrectNumber: TextView
     private lateinit var partiallyCorrectNumber: TextView
+    private lateinit var tryAgainButton : Button
+
+    private lateinit var binding: FragmentQuizEndBinding
     private lateinit var sharedPref: SharedPreferences
     private val viewModel: QuizViewModel by activityViewModels()
     private val userViewModel: UserViewModel by activityViewModels()
+
+    companion object {
+        const val TAG = "QuizEndFragment"
+    }
 
     @SuppressLint("SetTextI18n")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

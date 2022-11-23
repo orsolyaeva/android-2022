@@ -21,16 +21,6 @@ class UserViewModel : ViewModel() {
         }
     }
 
-    // get name of the user
-    fun getName(): String? {
-        return user.getName()
-    }
-
-    // get high score of the user
-    fun getHighScore(): Double {
-        return user.getHighScore()
-    }
-
     fun resetHighScore() {
         user.changeHighScore(0.0)
     }

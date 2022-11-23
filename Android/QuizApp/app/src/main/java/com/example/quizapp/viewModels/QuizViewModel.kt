@@ -29,6 +29,10 @@ class QuizViewModel: ViewModel() {
     var currentQuestion: MutableLiveData<Pair<Item?, Boolean>> =
         MutableLiveData<Pair<Item?, Boolean>>()
 
+    companion object {
+        private const val TAG = "QuizViewModel"
+    }
+
     init {
         currentQuestion.value = Pair(itQuestion.next(), false)
     }
@@ -44,16 +48,16 @@ class QuizViewModel: ViewModel() {
                     questionCategories.value!!.add(question.category)
                 }
             } else {
+                // if question categories is empty, add the first category
                 questionCategories.value = ArrayList()
                 questionCategories.value!!.add(question.category)
             }
         }
 
 
-        Log.d("QUIZ", "questionCategories: ${questionCategories.value}")
-
-        Log.d("QuizViewModel", "Questions: ${questions.size}")
-        Log.d("QuizViewModel", "Questions: ${questions}")
+        Log.d(TAG, "questionCategories: ${questionCategories.value}")
+        Log.d(TAG, "Questions: ${questions.size}")
+        Log.d(TAG, "Questions: $questions")
 
         return questions
     }
@@ -65,8 +69,8 @@ class QuizViewModel: ViewModel() {
     }
 
     fun checkAnswer(answer: MutableList<Int>) {
-        Log.d("QuizViewModel", "user answers: $answer")
-        Log.d("QuizViewModel", "correct answers: ${currentQuestion.value?.first?.correct}")
+        Log.d(TAG, "user answers: $answer")
+        Log.d(TAG, "correct answers: ${currentQuestion.value?.first?.correct}")
 
         if (answer.isEmpty()) {
             return
@@ -88,7 +92,7 @@ class QuizViewModel: ViewModel() {
                     countCorrect++
                 } else if (userAnswers.intersect(currentQuestion.value?.first?.correct!!.toSet()).isNotEmpty()) {
                     countPartiallyCorrect++
-                    Log.d("QuizViewModel", "PARTIALLY CORRECT")
+                    Log.d(TAG, "PARTIALLY CORRECT")
                     val totalNumberAnswers = currentQuestion.value?.first?.correct?.size!!
                     val totalNumberCorrectAnswers = userAnswers.intersect(currentQuestion.value?.first?.correct!!.toSet()).size
                     countPartiallyCorrectPoints += (totalNumberCorrectAnswers.toDouble() / totalNumberAnswers.toDouble())
@@ -102,9 +106,9 @@ class QuizViewModel: ViewModel() {
             }
         }
 
-        Log.d("QuizViewModel", "countCorrect: $countCorrect")
-        Log.d("QuizViewModel", "count partially correct: $countPartiallyCorrect")
-        Log.d("QuizViewModel", "partially correct points: $countPartiallyCorrectPoints")
+        Log.d(TAG, "countCorrect: $countCorrect")
+        Log.d(TAG, "count partially correct: $countPartiallyCorrect")
+        Log.d(TAG, "partially correct points: $countPartiallyCorrectPoints")
     }
 
     fun getScore() : Double {
@@ -125,9 +129,9 @@ class QuizViewModel: ViewModel() {
     }
 
     fun getIncorrectAnswers() : Int {
-        Log.d("QuizViewModel", "questions size: ${questions.size}")
-        Log.d("QuizViewModel", "correct answers: $countCorrect")
-        Log.d("QuizViewModel", "partially correct answers: $countPartiallyCorrect")
+        Log.d(TAG, "questions size: ${questions.size}")
+        Log.d(TAG, "correct answers: $countCorrect")
+        Log.d(TAG, "partially correct answers: $countPartiallyCorrect")
         return numberOfQuestions - countCorrect - countPartiallyCorrect
     }
 
@@ -136,10 +140,10 @@ class QuizViewModel: ViewModel() {
         countPartiallyCorrect = 0
         countPartiallyCorrectPoints = 0.0
         val temp = (3..itemService.getNumberTotalQuestions()).random()
-        Log.d("QuizViewModelQ", "temp: $temp")
+        Log.d(TAG, "temp: $temp")
         questions = itemService.selectRandomItems(temp)
         numberOfQuestions = questions.size
-        Log.d("QuizViewModelQ", "number of questions: $numberOfQuestions")
+        Log.d(TAG, "number of questions: $numberOfQuestions")
         itQuestion = startQuiz().iterator()
         currentQuestion.value = Pair(itQuestion.next(), false)
     }
@@ -186,7 +190,7 @@ class QuizViewModel: ViewModel() {
         viewModelScope.launch {
             try {
                 Log.d("QuizViewModelAPI", "Started loading questions")
-                val response =  RetrofitService.api.getQuestions(3);
+                val response =  RetrofitService.api.getQuestions(3)
                 Log.d("QuizViewModelAPI", "Finished loading questions")
                 if (response.isSuccessful) {
                     val questions = response.body()
@@ -206,7 +210,7 @@ class QuizViewModel: ViewModel() {
                                 "medium" -> QuestionDifficulty.MEDIUM
                                 "hard" -> QuestionDifficulty.HARD
                                 else -> QuestionDifficulty.EASY
-                            } as QuestionDifficulty
+                            }
                         )
                     } as MutableList<Item>?)!!
 

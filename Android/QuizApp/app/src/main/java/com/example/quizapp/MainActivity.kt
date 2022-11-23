@@ -4,23 +4,15 @@ import android.app.AlertDialog
 import  androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.view.Gravity
-import androidx.activity.viewModels
+import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
-import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.coroutineScope
-import androidx.lifecycle.viewModelScope
 import androidx.navigation.findNavController
-import com.example.quizapp.interfaces.QuestionEndpoints
 import com.example.quizapp.models.Item
 import com.example.quizapp.models.QuestionDifficulty
 import com.example.quizapp.models.QuestionType
 import com.example.quizapp.repositories.ItemRepository
-import com.example.quizapp.repositories.QuestionRepository
-import com.example.quizapp.services.ItemService
 import com.example.quizapp.services.RetrofitService
-import com.example.quizapp.viewModels.QuizViewModel
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.navigation.NavigationView
 import kotlinx.coroutines.launch
@@ -43,7 +35,7 @@ class MainActivity : AppCompatActivity() {
 
         ItemRepository.loadItems(com.example.quizapp.models.items)
 
-        var items = mutableListOf<Item>()
+        var items: MutableList<Item>
         lifecycle.coroutineScope.launch {
             try {
                 Log.d("QuizViewModelAPI", "Started loading questions")
@@ -67,7 +59,7 @@ class MainActivity : AppCompatActivity() {
                                 "medium" -> QuestionDifficulty.MEDIUM
                                 "hard" -> QuestionDifficulty.HARD
                                 else -> QuestionDifficulty.EASY
-                            } as QuestionDifficulty
+                            }
                         )
                     } as MutableList<Item>?)!!
 
@@ -92,7 +84,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun initListeners() {
         topBar.setNavigationOnClickListener {
-            drawerLayout.openDrawer(Gravity.LEFT)
+            drawerLayout.openDrawer(GravityCompat.START)
         }
 
         navigationView.setNavigationItemSelectedListener { menuItem ->
@@ -144,7 +136,7 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
             }
-            drawerLayout.closeDrawer(Gravity.LEFT)
+            drawerLayout.closeDrawer(GravityCompat.START)
             true
         }
     }
