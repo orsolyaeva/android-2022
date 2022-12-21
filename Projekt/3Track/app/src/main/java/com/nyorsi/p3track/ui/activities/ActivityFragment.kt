@@ -20,7 +20,7 @@ import com.nyorsi.p3track.adapters.DataAdapter
 import com.nyorsi.p3track.models.ActivityModel
 import com.nyorsi.p3track.utils.RequestState
 import com.nyorsi.p3track.viewModels.ActivityViewModel
-import com.nyorsi.p3track.viewModels.UserViewModel
+import com.nyorsi.p3track.viewModels.GlobalViewModel
 
 class ActivityFragment : Fragment(), DataAdapter.OnItemClickListener {
     private var _binding: FragmentActvitiesBinding? = null
@@ -28,7 +28,7 @@ class ActivityFragment : Fragment(), DataAdapter.OnItemClickListener {
     private lateinit var activityViewModel: ActivityViewModel
     private lateinit var recyclerView: RecyclerView
     private lateinit var dataAdapter: DataAdapter
-    private val userViewModel: UserViewModel by viewModels()
+    private val globalViewModel: GlobalViewModel by viewModels()
 
     companion object {
         const val TAG: String = "ActivityFragment"
@@ -62,26 +62,35 @@ class ActivityFragment : Fragment(), DataAdapter.OnItemClickListener {
         }
         recyclerView.setHasFixedSize(true)
 
-        userViewModel.getUsers()
+//        userViewModel.getUsers()
+//
+//        userViewModel.requestState.observe(viewLifecycleOwner) { itu ->
+//            when (itu) {
+//                RequestState.SUCCESS -> {
+//                    Log.d(TAG, "onCreateView: ${userViewModel.userList.value}")
+//                    activityViewModel.getActivities()
+//                    activityViewModel.userList = userViewModel.userList
+//                    activityViewModel.getActivitiesState.observe(viewLifecycleOwner) {
+//                        if (it == RequestState.SUCCESS) {
+//                            Log.d(TAG, "actvModel: ${activityViewModel.activityList.value}")
+//                            dataAdapter.setData(activityViewModel.activityList.value!! as MutableList<ActivityModel>)
+//                        } else {
+//                            return@observe
+//                        }
+//                    }
+//                }
+//                else -> {
+//                    Log.d(TAG, "User request state: $itu")
+//                }
+//            }
+//        }
 
-        userViewModel.requestState.observe(viewLifecycleOwner) { itu ->
-            when (itu) {
-                RequestState.SUCCESS -> {
-                    Log.d(TAG, "onCreateView: ${userViewModel.userList.value}")
-                    activityViewModel.getActivities()
-                    activityViewModel.userList = userViewModel.userList
-                    activityViewModel.getActivitiesState.observe(viewLifecycleOwner) {
-                        if (it == RequestState.SUCCESS) {
-                            Log.d(TAG, "actvModel: ${activityViewModel.activityList.value}")
-                            dataAdapter.setData(activityViewModel.activityList.value!! as MutableList<ActivityModel>)
-                        } else {
-                            return@observe
-                        }
-                    }
-                }
-                else -> {
-                    Log.d(TAG, "User request state: $itu")
-                }
+        globalViewModel.loadActivities()
+        globalViewModel.requestState.observe(viewLifecycleOwner) {
+            if (it == RequestState.SUCCESS) {
+                Log.d(TAG, "actvModel: ${globalViewModel.getActivityList().value}")
+                Log.d(TAG, "actvModel: ${globalViewModel.getUserList().value}")
+                dataAdapter.setData(globalViewModel.getActivityList().value!! as MutableList<ActivityModel>)
             }
         }
 

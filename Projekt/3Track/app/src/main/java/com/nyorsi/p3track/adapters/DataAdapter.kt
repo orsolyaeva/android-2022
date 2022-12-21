@@ -1,12 +1,14 @@
 package com.nyorsi.p3track.adapters
 
 import android.annotation.SuppressLint
+import android.media.Image
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.nyorsi.p3track.R
 import com.nyorsi.p3track.models.ActivityModel
 import com.nyorsi.p3track.models.ActivityType
@@ -23,6 +25,7 @@ class DataAdapter (
         val activityType: TextView = activityView.findViewById(R.id.activityType)
         val activityTypeIcon: ImageView = activityView.findViewById(R.id.actvityTypeIcon)
         val userName: TextView = activityView.findViewById(R.id.userName)
+        val userProfile: ImageView = activityView.findViewById(R.id.userProfile)
 
         init {
             activityView.setOnClickListener(this)
@@ -51,6 +54,13 @@ class DataAdapter (
         }
 
         holder.userName.text = currentItem.createdByUser?.firstName + " " + currentItem.createdByUser?.lastName
+        if(currentItem.createdByUser?.image != null) {
+            Glide.with(holder.userProfile.context)
+                .load(currentItem.createdByUser?.image)
+                .into(holder.userProfile)
+        } else {
+            holder.userProfile.setImageResource(R.drawable.userprofile_placeholder)
+        }
     }
 
     override fun getItemCount(): Int = list.size
