@@ -1,5 +1,6 @@
 package com.nyorsi.p3track.ui.activities
 
+import android.app.Application
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -7,6 +8,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -17,6 +20,7 @@ import com.nyorsi.p3track.adapters.DataAdapter
 import com.nyorsi.p3track.models.ActivityModel
 import com.nyorsi.p3track.utils.RequestState
 import com.nyorsi.p3track.viewModels.ActivityViewModel
+import com.nyorsi.p3track.viewModels.UserViewModel
 
 class ActivityFragment : Fragment(), DataAdapter.OnItemClickListener {
     private var _binding: FragmentActvitiesBinding? = null
@@ -24,6 +28,7 @@ class ActivityFragment : Fragment(), DataAdapter.OnItemClickListener {
     private lateinit var activityViewModel: ActivityViewModel
     private lateinit var recyclerView: RecyclerView
     private lateinit var dataAdapter: DataAdapter
+    private val userViewModel: UserViewModel by viewModels()
 
     companion object {
         const val TAG: String = "ActivityFragment"
@@ -42,7 +47,11 @@ class ActivityFragment : Fragment(), DataAdapter.OnItemClickListener {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-       activityViewModel = ViewModelProvider(this)[ActivityViewModel::class.java]
+        activityViewModel = ViewModelProvider(this)[ActivityViewModel::class.java]
+
+        val sharedPref = requireActivity().getSharedPreferences("P3Track", AppCompatActivity.MODE_PRIVATE)
+        val token = sharedPref?.getString("token", null)
+
         _binding = FragmentActvitiesBinding.inflate(inflater, container, false)
         // hide bottom navigation bar from login fragment
         recyclerView = binding.recyclerView
@@ -53,12 +62,26 @@ class ActivityFragment : Fragment(), DataAdapter.OnItemClickListener {
         }
         recyclerView.setHasFixedSize(true)
 
-        activityViewModel.getActivitiesState.observe(viewLifecycleOwner) {
-            if (it == RequestState.LOADING) {
-                return@observe
-            }
-            if (it == RequestState.SUCCESS) {
-                dataAdapter.setData(activityViewModel.activityList.value!! as MutableList<ActivityModel>)
+        userViewModel.getUsers()
+
+        userViewModel.requestState.observe(viewLifecycleOwner) { itu ->
+            when (itu) {
+                RequestState.SUCCESS -> {
+                    Log.d(TAG, "onCreateView: ${userViewModel.userList.value}")
+                    activityViewModel.getActivities()
+                    activityViewModel.userList = userViewModel.userList
+                    activityViewModel.getActivitiesState.observe(viewLifecycleOwner) {
+                        if (it == RequestState.SUCCESS) {
+                            Log.d(TAG, "actvModel: ${activityViewModel.activityList.value}")
+                            dataAdapter.setData(activityViewModel.activityList.value!! as MutableList<ActivityModel>)
+                        } else {
+                            return@observe
+                        }
+                    }
+                }
+                else -> {
+                    Log.d(TAG, "User request state: $itu")
+                }
             }
         }
 

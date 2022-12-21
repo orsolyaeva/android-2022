@@ -4,10 +4,12 @@ import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.nyorsi.p3track.R
 import com.nyorsi.p3track.models.ActivityModel
+import com.nyorsi.p3track.models.ActivityType
 
 class DataAdapter (
     private var list: MutableList<ActivityModel>,
@@ -18,7 +20,9 @@ class DataAdapter (
     }
 
     inner class DataViewHolder(activityView: View): RecyclerView.ViewHolder(activityView), View.OnClickListener {
-        val actionText = activityView.findViewById<TextView>(R.id.actionText)
+        val activityType: TextView = activityView.findViewById(R.id.activityType)
+        val activityTypeIcon: ImageView = activityView.findViewById(R.id.actvityTypeIcon)
+        val userName: TextView = activityView.findViewById(R.id.userName)
 
         init {
             activityView.setOnClickListener(this)
@@ -35,9 +39,18 @@ class DataAdapter (
         return DataViewHolder(activityView)
     }
 
+    @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(holder: DataViewHolder, position: Int) {
         val currentItem = list[position]
-        holder.actionText.text = currentItem.description
+        holder.activityType.text = currentItem.activityType.toString()
+
+        when (currentItem.activityType) {
+            ActivityType.DEPARTMENT -> holder.activityTypeIcon.setImageResource(R.drawable.ic_department)
+            ActivityType.TASK -> holder.activityTypeIcon.setImageResource(R.drawable.ic_task)
+            ActivityType.ANNOUNCEMENT -> holder.activityTypeIcon.setImageResource(R.drawable.ic_announcement)
+        }
+
+        holder.userName.text = currentItem.createdByUser?.firstName + " " + currentItem.createdByUser?.lastName
     }
 
     override fun getItemCount(): Int = list.size

@@ -7,6 +7,9 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.nyorsi.p3track.models.ActivityModel
+import com.nyorsi.p3track.models.ActivitySubType
+import com.nyorsi.p3track.models.ActivityType
+import com.nyorsi.p3track.models.UserModel
 import com.nyorsi.p3track.repositories.ActivityRepository
 import com.nyorsi.p3track.utils.RequestState
 import kotlinx.coroutines.launch
@@ -19,12 +22,9 @@ class ActivityViewModel(application: Application) : AndroidViewModel(application
     private val activityRepository = ActivityRepository()
     val getActivitiesState: MutableLiveData<RequestState> = MutableLiveData()
     var activityList : MutableLiveData<List<ActivityModel>> = MutableLiveData()
+    var userList: MutableLiveData<List<UserModel>> = MutableLiveData()
 
-    init {
-        getActivities()
-    }
-
-    private fun getActivities() {
+    fun getActivities() {
         getActivitiesState.value = RequestState.LOADING
         viewModelScope.launch {
            try {
@@ -36,9 +36,16 @@ class ActivityViewModel(application: Application) : AndroidViewModel(application
                    val response = activityRepository.getActivities(token)
                    if(response.isSuccessful) {
                        val activities = response.body()!!
+                       Log.d("Activities", userList.value.toString())
                        for(activity in activities) {
-                           activityList.value  = activityList.value?.plus(ActivityModel(activity.ID, "csoki"))
-                           Log.d("ActivityList", "getActivities: " + activityList.value.toString())
+                           val user = userList.value?.find { it.id == activity.created_by_user_id }
+                           val subUser = userList.value?.find { it.id == activity.sub_user_ID }
+                           activityList.value  = activityList.value?.plus(ActivityModel(activity.ID,
+                               ActivityType.values()[activity.type],
+                               ActivitySubType.values()[activity.sub_type],
+                               user, activity.created_time, activity.sub_ID,
+                               subUser, activity.note, activity.progress,))
+//                           Log.d("ActivityList", "getActivities: " + activityList.value.toString())
                        }
                        getActivitiesState.value = RequestState.SUCCESS
                    } else {

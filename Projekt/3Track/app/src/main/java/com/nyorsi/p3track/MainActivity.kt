@@ -19,7 +19,7 @@ class MainActivity : AppCompatActivity() {
         val splashScreen = installSplashScreen()
 
         splashScreen.setKeepOnScreenCondition {
-            !checkedUser
+            !checkedUser || userViewModel.requestState.value == RequestState.LOADING
         }
 
         setContentView(R.layout.activity_main)
@@ -55,11 +55,11 @@ class MainActivity : AppCompatActivity() {
             userViewModel.requestState.observe(this) {
                 when (it) {
                     RequestState.SUCCESS -> {
-                        checkedUser = true
                         findNavController(R.id.nav_host_fragment).navigate(R.id.actvitiesFragment)
                     }
                     else -> {
                         checkedUser = true
+                        findNavController(R.id.nav_host_fragment).navigate(R.id.loginFragment)
                     }
                 }
             }

@@ -18,13 +18,11 @@ import com.nyorsi.p3track.R
 import com.nyorsi.p3track.databinding.FragmentLoginBinding
 import com.nyorsi.p3track.utils.RequestState
 import com.nyorsi.p3track.viewModels.LoginViewModel
-import com.nyorsi.p3track.viewModels.UserViewModel
 
 class LoginFragment : Fragment() {
     private var _binding: FragmentLoginBinding? = null
     private val binding get() = _binding!!
     private lateinit var loginViewModel: LoginViewModel
-    private lateinit var userViewModel: UserViewModel
 
     private lateinit var email: EditText
     private lateinit var password: EditText

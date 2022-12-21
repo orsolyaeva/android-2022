@@ -2,7 +2,7 @@ package com.nyorsi.p3track.api.queryModels.users
 
 import com.google.gson.annotations.SerializedName
 
-data class GetMyUserResponse(
+data class GetUsersResponse(
     @SerializedName("ID")
     var ID: Int,
     @SerializedName("last_name")
