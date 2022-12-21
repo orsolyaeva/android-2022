@@ -15,7 +15,9 @@
     <color name="shadow_blue">#7D8CA3</color>
     <color name="iceberg">#79A9D1</color>
     <color name="cerulean_blue">#1A58CE</color>
+    <color name="cerulean_blue_alfa">#CC1A58CE</color>
     <color name="united_nations_blue">#4E87E3</color>
+    <color name="united_nations_blue_alfa">#D94E87E3</color>
     <color name="crayola_blue">#CFDAF4</color>
 
 </resources>

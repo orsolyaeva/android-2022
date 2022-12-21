@@ -1,4 +1,4 @@
-package com.nyorsi.p3track.api.login
+package com.nyorsi.p3track.api.queryModels.login
 
 import com.google.gson.annotations.SerializedName
 

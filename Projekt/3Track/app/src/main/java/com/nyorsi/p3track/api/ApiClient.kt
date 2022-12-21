@@ -1,5 +1,6 @@
 package com.nyorsi.p3track.api
 
+import com.nyorsi.p3track.utils.Constants
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit

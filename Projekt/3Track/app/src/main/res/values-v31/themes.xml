@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <style name="Theme.3Track.SplashScreen" parent="Theme.SplashScreen">
-        <item name="windowSplashScreenBackground">@color/cerulean_blue</item>
-        <item name="android:windowSplashScreenBrandingImage">@drawable/logo</item>
-        <item name="postSplashScreenTheme">@style/Theme.3Track</item>
-    </style>
-</resources>

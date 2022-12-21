@@ -5,4 +5,8 @@
     <string name="login_page_background_image">Login page background image</string>
     <string name="enter_email">Enter email</string>
     <string name="enter_password">Password</string>
+    <string name="activities">Activities</string>
+    <string name="profile">Profile</string>
+    <string name="my_tasks">My tasks</string>
+    <string name="my_groups">My groups</string>
 </resources>

@@ -17,5 +17,18 @@
         android:id="@+id/actvitiesFragment"
         android:name="com.nyorsi.p3track.ui.activities.ActivityFragment"
         android:label="fragment_actvities"
-        tools:layout="@layout/fragment_actvities" />
+        tools:layout="@layout/fragment_actvities" >
+        <action
+            android:id="@+id/action_actvitiesFragment_to_profileFragment"
+            app:destination="@id/profileFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="com.nyorsi.p3track.ui.profile.ProfileFragment"
+        android:label="fragment_profile"
+        tools:layout="@layout/fragment_profile" >
+        <action
+            android:id="@+id/action_profileFragment_to_loginFragment"
+            app:destination="@id/loginFragment" />
+    </fragment>
 </navigation>

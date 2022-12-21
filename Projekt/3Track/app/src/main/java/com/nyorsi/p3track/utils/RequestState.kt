@@ -1,6 +1,6 @@
-package com.nyorsi.p3track.ui.login
+package com.nyorsi.p3track.utils
 
-enum class LoginResult {
+enum class RequestState {
     LOADING,
     SUCCESS,
     INVALID_CREDENTIALS,

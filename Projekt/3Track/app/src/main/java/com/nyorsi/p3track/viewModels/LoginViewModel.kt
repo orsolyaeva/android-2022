@@ -1,30 +1,28 @@
-package com.nyorsi.p3track.ui.login
+package com.nyorsi.p3track.viewModels
 
 import android.app.Application
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.nyorsi.p3track.api.login.LoginRequest
-import com.nyorsi.p3track.api.login.LoginResponse
+import com.nyorsi.p3track.api.queryModels.login.LoginRequest
 import com.nyorsi.p3track.repositories.UserRepository
+import com.nyorsi.p3track.utils.RequestState
 import kotlinx.coroutines.launch
-import org.json.JSONObject
 
 class LoginViewModel(application: Application) : AndroidViewModel(application) {
     companion object {
         val TAG: String = LoginViewModel::class.java.simpleName
     }
 
-    val loginResult: MutableLiveData<LoginResult> = MutableLiveData()
+    val requestState: MutableLiveData<RequestState> = MutableLiveData()
     private val userRepository = UserRepository()
 
     fun login(email: String, password: String) {
-        loginResult.value = LoginResult.LOADING
+        requestState.value = RequestState.LOADING
         if(email.isEmpty() || password.isEmpty()) {
-            loginResult.value = LoginResult.INVALID_CREDENTIALS
+            requestState.value = RequestState.INVALID_CREDENTIALS
             return
         }
         viewModelScope.launch {
@@ -32,19 +30,26 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
                 val loginRequest = LoginRequest(email, password)
                 val response = userRepository.loginUser(loginRequest)
                 if(response.isSuccessful) {
-                    loginResult.value = LoginResult.SUCCESS
+                    requestState.value = RequestState.SUCCESS
                     val deadline = response.body()!!.deadline
+                    val token = response.body()!!.token
+                    Log.d(TAG, "login: $deadline")
+                    Log.d(TAG, "login: $token")
                     val sharedPref = getApplication<Application>().getSharedPreferences("P3Track", AppCompatActivity.MODE_PRIVATE)
                     with(sharedPref.edit()) {
                         putString("deadline", deadline.toString())
                         apply()
                     }
+                    with(sharedPref.edit()) {
+                        putString("token", token)
+                        apply()
+                    }
                 } else {
-                    loginResult.value = LoginResult.INVALID_CREDENTIALS
+                    requestState.value = RequestState.INVALID_CREDENTIALS
                     Log.d(TAG, "login: ${response.errorBody()}")
                 }
             } catch (e: Exception) {
-                loginResult.value = LoginResult.UNKNOWN_ERROR
+                requestState.value = RequestState.UNKNOWN_ERROR
                 Log.d(TAG, "login: ${e.message}")
             }
         }
