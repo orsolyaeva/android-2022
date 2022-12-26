@@ -18,6 +18,8 @@ import com.nyorsi.p3track.databinding.FragmentActvitiesBinding
 import com.nyorsi.p3track.R
 import com.nyorsi.p3track.adapters.DataAdapter
 import com.nyorsi.p3track.models.ActivityModel
+import com.nyorsi.p3track.models.DepartmentModel
+import com.nyorsi.p3track.models.TaskModel
 import com.nyorsi.p3track.utils.RequestState
 import com.nyorsi.p3track.viewModels.ActivityViewModel
 import com.nyorsi.p3track.viewModels.GlobalViewModel
@@ -53,7 +55,7 @@ class ActivityFragment : Fragment(), DataAdapter.OnItemClickListener {
         val token = sharedPref?.getString("token", null)
 
         _binding = FragmentActvitiesBinding.inflate(inflater, container, false)
-        // hide bottom navigation bar from login fragment
+
         recyclerView = binding.recyclerView
         dataAdapter = DataAdapter(ArrayList(), this)
         recyclerView.apply {
@@ -90,7 +92,9 @@ class ActivityFragment : Fragment(), DataAdapter.OnItemClickListener {
             if (it == RequestState.SUCCESS) {
                 Log.d(TAG, "actvModel: ${globalViewModel.getActivityList().value}")
                 Log.d(TAG, "actvModel: ${globalViewModel.getUserList().value}")
-                dataAdapter.setData(globalViewModel.getActivityList().value!! as MutableList<ActivityModel>)
+                dataAdapter.setData(globalViewModel.getActivityList().value!! as MutableList<ActivityModel>,
+                                    globalViewModel.getDepartmentList().value!! as MutableList<DepartmentModel>,
+                                    globalViewModel.getTaskList().value!! as MutableList<TaskModel>)
             }
         }
 
