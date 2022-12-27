@@ -38,5 +38,14 @@
         android:id="@+id/myTasksFragment"
         android:name="com.nyorsi.p3track.ui.tasks.MyTasksFragment"
         android:label="fragment_my_tasks"
-        tools:layout="@layout/fragment_my_tasks" />
+        tools:layout="@layout/fragment_my_tasks" >
+        <action
+            android:id="@+id/action_myTasksFragment_to_taskDescriptionFragment"
+            app:destination="@id/taskDescriptionFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/taskDescriptionFragment"
+        android:name="com.nyorsi.p3track.ui.tasks.TaskDescriptionFragment"
+        android:label="fragment_task_description"
+        tools:layout="@layout/fragment_task_description" />
 </navigation>

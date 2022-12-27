@@ -28,6 +28,7 @@ class GlobalViewModel(application: Application) : AndroidViewModel(application) 
 
     fun loadActivities() {
         val liveDataMerger = MediatorLiveData<Int>()
+        requestState.value = RequestState.LOADING
         _activityList.value = listOf()
         _taskList.value = listOf()
 
@@ -74,14 +75,14 @@ class GlobalViewModel(application: Application) : AndroidViewModel(application) 
                 val taskList = taskViewModel.taskList.value
                 val departmentList = departmentViewModel.departmentList.value
 
-                Log.d(TAG, "loadActivities: ${userList?.size}")
-                Log.d(TAG, "loadActivities: ${activityList?.size}")
-                Log.d(TAG, "loadActivities: ${taskList?.size}")
-                Log.d(TAG, "loadActivities: ${departmentList?.size}")
+                Log.d(TAG, "userList: ${userList?.size}")
+                Log.d(TAG, "activityList: ${activityList?.size}")
+                Log.d(TAG, "taskList: ${taskList?.size}")
+                Log.d(TAG, "departmentList: ${departmentList?.size}")
 
 
                 for(task in taskList!!) {
-                    Log.d(TAG, "loadActivities: ${task}")
+//                    Log.d(TAG, "loadActivities: ${task}")
                     val createdByUser = userList?.find { user -> user.id == task.created_by_user_ID }
                     val assignedToUser = userList?.find { user -> user.id == task.assigned_to_user_ID }
                     val department = departmentList?.find { department -> department.id == task.department_ID }
@@ -89,10 +90,12 @@ class GlobalViewModel(application: Application) : AndroidViewModel(application) 
                     _taskList.value = _taskList.value?.plus(
                         TaskModel( task.ID,
                             task.title, task.description, task.created_time, createdByUser, assignedToUser,
-                            TaskPriority.values()[task.priority], task.deadline, department, TaskStatus.values()[task.status], task.progress)
+                            if(task.priority == 0) TaskPriority.LOW else if(task.priority < 4) TaskPriority.MEDIUM else TaskPriority.HIGH,
+                            task.deadline, department,
+                            if(task.status < 0) TaskStatus.BLOCKED else if(task.status < 3) TaskStatus.values()[task.status] else TaskStatus.NEW,
+                            task.progress)
                     )
-
-                    Log.d(TAG, "taskList: ${_taskList.value}")
+//                    Log.d(TAG, "taskList: ${_taskList.value}")
                 }
 
                 Log.d(TAG, "taskList.size: ${_taskList.value?.size}")

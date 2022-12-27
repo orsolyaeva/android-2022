@@ -7,8 +7,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import com.nyorsi.p3track.R
 import com.nyorsi.p3track.adapters.TaskDataAdapter
 import com.nyorsi.p3track.databinding.FragmentMyTasksBinding
 import com.nyorsi.p3track.models.TaskModel
@@ -59,6 +63,12 @@ class MyTasksFragment : Fragment(), TaskDataAdapter.OnItemClickListener {
     }
 
     override fun onItemClick(position: Int) {
-        Log.i(ActivityFragment.TAG, "Clicked item $position")
+        val taskId = dataAdapter.getItemAt(position).id
+        Log.d(TAG, "onItemClick: $taskId")
+        val parsedValue = Gson().toJson(dataAdapter.getItemAt(position), object: TypeToken<TaskModel>() {}.type)
+        val bundle = Bundle()
+        findNavController().navigate(R.id.taskDescriptionFragment, Bundle().apply {
+            putString("currentTask", parsedValue)
+        })
     }
 }
