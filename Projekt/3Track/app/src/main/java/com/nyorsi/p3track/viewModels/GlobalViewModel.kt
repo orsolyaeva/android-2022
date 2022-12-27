@@ -5,11 +5,10 @@ import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
-import com.nyorsi.p3track.models.ActivityModel
-import com.nyorsi.p3track.models.ActivitySubType
-import com.nyorsi.p3track.models.ActivityType
-import com.nyorsi.p3track.models.TaskModel
+import androidx.lifecycle.viewModelScope
+import com.nyorsi.p3track.models.*
 import com.nyorsi.p3track.utils.RequestState
+import kotlinx.coroutines.launch
 
 
 class GlobalViewModel(application: Application) : AndroidViewModel(application) {
@@ -42,7 +41,7 @@ class GlobalViewModel(application: Application) : AndroidViewModel(application) 
         liveDataMerger.addSource(userViewModel.requestState) {
             if (it == RequestState.SUCCESS) {
                 liveDataMerger.value = liveDataMerger.value?.plus(1)
-                Log.d(TAG, "loadActivities: ${userViewModel.userList.value}")
+                Log.d(TAG, "loadUsers: ${userViewModel.userList.value}")
             }
         }
 
@@ -56,38 +55,48 @@ class GlobalViewModel(application: Application) : AndroidViewModel(application) 
         liveDataMerger.addSource(departmentViewModel.getDepartmentsState) {
             if (it == RequestState.SUCCESS) {
                 liveDataMerger.value = liveDataMerger.value?.plus(1)
-                Log.d(TAG, "loadActivities: ${liveDataMerger.value}")
+                Log.d(TAG, "loadDepartments: ${liveDataMerger.value}")
             }
         }
 
         liveDataMerger.addSource(taskViewModel.getTasksState) {
             if (it == RequestState.SUCCESS) {
                 liveDataMerger.value = liveDataMerger.value?.plus(1)
-                Log.d(TAG, "loadActivities: ${liveDataMerger.value}")
+                Log.d(TAG, "loadTasks: ${liveDataMerger.value}")
             }
         }
 
         liveDataMerger.observeForever { it ->
             if (it == 4) {
+                Log.d(TAG, "GYERE MAR")
                 val userList = userViewModel.userList.value
                 val activityList = activityViewModel.activityList.value
                 val taskList = taskViewModel.taskList.value
                 val departmentList = departmentViewModel.departmentList.value
 
+                Log.d(TAG, "loadActivities: ${userList?.size}")
+                Log.d(TAG, "loadActivities: ${activityList?.size}")
+                Log.d(TAG, "loadActivities: ${taskList?.size}")
+                Log.d(TAG, "loadActivities: ${departmentList?.size}")
+
+
                 for(task in taskList!!) {
+                    Log.d(TAG, "loadActivities: ${task}")
                     val createdByUser = userList?.find { user -> user.id == task.created_by_user_ID }
                     val assignedToUser = userList?.find { user -> user.id == task.assigned_to_user_ID }
                     val department = departmentList?.find { department -> department.id == task.department_ID }
 
                     _taskList.value = _taskList.value?.plus(
                         TaskModel( task.ID,
-                        task.title, task.description, task.created_time, createdByUser, assignedToUser,
-                        task.priority, task.deadline, department, task.status, task.progress)
+                            task.title, task.description, task.created_time, createdByUser, assignedToUser,
+                            TaskPriority.values()[task.priority], task.deadline, department, TaskStatus.values()[task.status], task.progress)
                     )
+
+                    Log.d(TAG, "taskList: ${_taskList.value}")
                 }
 
-                Log.d(TAG, "loadActivities: ${_taskList.value}")
-                
+                Log.d(TAG, "taskList.size: ${_taskList.value?.size}")
+
                 for(activity in activityList!!) {
                     val user = userList?.find { it.id == activity.created_by_user_id }
                     val subUser = userList?.find { it.id == activity.sub_user_ID }
@@ -99,6 +108,7 @@ class GlobalViewModel(application: Application) : AndroidViewModel(application) 
                 }
 
                 requestState.value = RequestState.SUCCESS
+
             }
         }
     }

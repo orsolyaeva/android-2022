@@ -2,6 +2,7 @@ package com.nyorsi.p3track.viewModels
 
 import android.app.Application
 import android.app.DownloadManager.Request
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
@@ -31,12 +32,17 @@ class TaskViewModel(application: Application): AndroidViewModel(application) {
                         for (task in taskListResponse) {
                             taskList.value = taskList.value?.plus(task)
                         }
+                        Log.d("TaskViewModel", "getTasks: ${taskList.value}")
                         getTasksState.value = RequestState.SUCCESS
+                        Log.d("GlobalViewModel", "task: SUCCESS")
                     } else {
+                        Log.d("GlobalViewModel", "task: ERROR")
                         getTasksState.value = RequestState.UNKNOWN_ERROR
                     }
                 }
             } catch (e: Exception) {
+                Log.d("GlobalViewModel", "task: ERROR2")
+                Log.d("GlobalViewModel", "task: ${e.message}")
                 getTasksState.value = RequestState.UNKNOWN_ERROR
             }
         }

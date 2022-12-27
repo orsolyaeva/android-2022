@@ -32,7 +32,7 @@ class MainActivity : AppCompatActivity() {
                     findNavController(R.id.nav_host_fragment).navigate(R.id.actvitiesFragment)
                 }
                 R.id.item_tasks -> {
-
+                    findNavController(R.id.nav_host_fragment).navigate(R.id.myTasksFragment)
                 }
                 R.id.item_groups -> {
                     // Respond to navigation item 2 click

@@ -1,6 +1,5 @@
 package com.nyorsi.p3track.ui.activities
 
-import android.app.Application
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -9,14 +8,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.nyorsi.p3track.databinding.FragmentActvitiesBinding
 import com.nyorsi.p3track.R
-import com.nyorsi.p3track.adapters.DataAdapter
+import com.nyorsi.p3track.adapters.ActivityDataAdapter
 import com.nyorsi.p3track.models.ActivityModel
 import com.nyorsi.p3track.models.DepartmentModel
 import com.nyorsi.p3track.models.TaskModel
@@ -24,12 +22,11 @@ import com.nyorsi.p3track.utils.RequestState
 import com.nyorsi.p3track.viewModels.ActivityViewModel
 import com.nyorsi.p3track.viewModels.GlobalViewModel
 
-class ActivityFragment : Fragment(), DataAdapter.OnItemClickListener {
+class ActivityFragment : Fragment(), ActivityDataAdapter.OnItemClickListener {
     private var _binding: FragmentActvitiesBinding? = null
     private val binding get() = _binding!!
-    private lateinit var activityViewModel: ActivityViewModel
     private lateinit var recyclerView: RecyclerView
-    private lateinit var dataAdapter: DataAdapter
+    private lateinit var dataAdapter: ActivityDataAdapter
     private val globalViewModel: GlobalViewModel by viewModels()
 
     companion object {
@@ -49,15 +46,13 @@ class ActivityFragment : Fragment(), DataAdapter.OnItemClickListener {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        activityViewModel = ViewModelProvider(this)[ActivityViewModel::class.java]
-
         val sharedPref = requireActivity().getSharedPreferences("P3Track", AppCompatActivity.MODE_PRIVATE)
         val token = sharedPref?.getString("token", null)
 
         _binding = FragmentActvitiesBinding.inflate(inflater, container, false)
 
         recyclerView = binding.recyclerView
-        dataAdapter = DataAdapter(ArrayList(), this)
+        dataAdapter = ActivityDataAdapter(ArrayList(), this)
         recyclerView.apply {
             adapter = dataAdapter
             layoutManager = LinearLayoutManager(activity)

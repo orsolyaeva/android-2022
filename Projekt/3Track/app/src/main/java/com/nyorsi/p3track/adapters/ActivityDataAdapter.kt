@@ -1,7 +1,6 @@
 package com.nyorsi.p3track.adapters
 
 import android.annotation.SuppressLint
-import android.text.Html
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -17,10 +16,10 @@ import com.nyorsi.p3track.R
 import com.nyorsi.p3track.models.*
 import java.util.*
 
-class DataAdapter (
+class ActivityDataAdapter (
     private var list: MutableList<ActivityModel>,
     private val clickListener: OnItemClickListener
-): RecyclerView.Adapter<DataAdapter.DataViewHolder>() {
+): RecyclerView.Adapter<ActivityDataAdapter.DataViewHolder>() {
     private val departmentList: MutableList<DepartmentModel> = mutableListOf()
     private val taskList: MutableList<TaskModel> = mutableListOf()
 
@@ -176,6 +175,8 @@ class DataAdapter (
                 }
             }
         }
+
+        // @TODO: add the other activity types
     }
 
     override fun getItemCount(): Int = list.size

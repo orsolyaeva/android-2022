@@ -1,6 +1,7 @@
 package com.nyorsi.p3track.viewModels
 
 import android.app.Application
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
@@ -30,6 +31,7 @@ class DepartmentViewModel(application: Application): AndroidViewModel(applicatio
                             departmentList.value = departmentList.value?.plus(DepartmentModel(department.ID, department.name))
                         }
                         getDepartmentsState.value = RequestState.SUCCESS
+                        Log.d("GlobalViewModel", "dep: SUCCESS")
                     } else {
                         getDepartmentsState.value = RequestState.UNKNOWN_ERROR
                     }

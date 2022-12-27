@@ -48,7 +48,7 @@ class ActivityViewModel(application: Application) : AndroidViewModel(application
                }
            } catch (e: Exception) {
                getActivitiesState.value = RequestState.UNKNOWN_ERROR
-               Log.d(TAG, "getActivities: ${e.message}")
+               Log.d(TAG, "getActivitiesError: ${e.message}")
            }
         }
     }

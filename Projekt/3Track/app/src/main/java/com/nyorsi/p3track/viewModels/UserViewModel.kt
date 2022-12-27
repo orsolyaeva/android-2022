@@ -73,6 +73,7 @@ class UserViewModel (application: Application) : AndroidViewModel(application) {
                         }
                         Log.d("UserList", "getUsers: " + userList.value.toString())
                         requestState.value = RequestState.SUCCESS
+                        Log.d("GlobalViewModel", "user: SUCCESS")
                     } else {
                         requestState.value = RequestState.INVALID_CREDENTIALS
                         Log.d(LoginViewModel.TAG, "login: ${response.errorBody()}")

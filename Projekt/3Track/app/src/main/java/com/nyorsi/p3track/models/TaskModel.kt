@@ -1,9 +1,16 @@
 package com.nyorsi.p3track.models
 
 enum class TaskStatus {
-    OPEN,
+    NEW,
     IN_PROGRESS,
+    BLOCKED,
     DONE
+}
+
+enum class TaskPriority {
+    LOW,
+    MEDIUM,
+    HIGH
 }
 
 data class TaskModel(
@@ -13,9 +20,9 @@ data class TaskModel(
     var createdTime: Long,
     var createdBy: UserModel?,
     var assignedTo: UserModel?,
-    var priority: Int,
+    var priority: TaskPriority,
     var deadline: Long,
     var department: DepartmentModel?,
-    var status: Int,
+    var status: TaskStatus,
     var progress: Int?
 )
