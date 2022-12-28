@@ -87,6 +87,7 @@ class ActivityFragment : Fragment(), ActivityDataAdapter.OnItemClickListener {
             if (it == RequestState.SUCCESS) {
                 Log.d(TAG, "actvModel: ${globalViewModel.getActivityList().value}")
                 Log.d(TAG, "actvModel: ${globalViewModel.getUserList().value}")
+                Log.d(TAG, "actvModel: ${globalViewModel.getTaskList().value}")
                 dataAdapter.setData(globalViewModel.getActivityList().value!! as MutableList<ActivityModel>,
                                     globalViewModel.getDepartmentList().value!! as MutableList<DepartmentModel>,
                                     globalViewModel.getTaskList().value!! as MutableList<TaskModel>)

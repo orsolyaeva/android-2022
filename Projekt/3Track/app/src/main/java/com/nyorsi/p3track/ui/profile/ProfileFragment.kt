@@ -1,5 +1,7 @@
 package com.nyorsi.p3track.ui.profile
 
+import android.annotation.SuppressLint
+import android.media.Image
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -7,29 +9,95 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.bumptech.glide.Glide
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.nyorsi.p3track.R
 import com.nyorsi.p3track.databinding.FragmentProfileBinding
+import com.nyorsi.p3track.models.UserModel
+import com.nyorsi.p3track.models.UserType
+import com.nyorsi.p3track.utils.RequestState
+import com.nyorsi.p3track.viewModels.GlobalViewModel
+import org.w3c.dom.Text
 
 class ProfileFragment : Fragment() {
     private lateinit var signOutButton: Button
+    private lateinit var profilePicture: ImageView
+    private lateinit var userName: TextView
+    private lateinit var userType: TextView
+    private lateinit var mentorPicture: ImageView
+    private lateinit var mentorName: TextView
+    private lateinit var mentorType: TextView
+    private lateinit var userEmail: TextView
+    private lateinit var userPhoneNumber: TextView
+    private lateinit var officeLocation: TextView
 
     private lateinit var _binding: FragmentProfileBinding
+    private lateinit var currentUser: UserModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
     }
 
+    @SuppressLint("SetTextI18n")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        initializeViews()
+        initializeListeners()
 
+        val parsedValue = arguments?.getString("loggedInUser")
+        currentUser = Gson().fromJson(parsedValue!!, object : TypeToken<UserModel>() {}.type)
+
+        if(currentUser.image != null) {
+            Glide.with(profilePicture.context)
+                .load(currentUser.image)
+                .into(profilePicture)
+        } else {
+            profilePicture.setImageResource(R.drawable.userprofile_placeholder)
+        }
+
+        userName.text = currentUser.firstName + " " + currentUser.lastName
+
+        when(currentUser.type) {
+            UserType.HR_MANAGER -> userType.text = "HR Manager"
+            UserType.DEPARTMENT_LEAD -> userType.text = "Department Lead"
+            UserType.SIMPLE_EMPLOYEE -> userType.text = "Simple Employee"
+        }
+
+        userEmail.text = currentUser.email
+        userPhoneNumber.text = currentUser.phoneNumber ?: "No phone number provided"
+        officeLocation.text = currentUser.location ?: "No office location provided"
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        Log.d("ProfileFragment", "onCreateView")
+        _binding = FragmentProfileBinding.inflate(inflater, container, false)
+        return _binding.root
+    }
+
+    private fun initializeViews() {
         signOutButton = _binding.signOutButton
+        profilePicture = _binding.profilePicture
+        userName = _binding.profileUserName
+        userType = _binding.profileUserType
+        mentorPicture = _binding.mentorPicture
+        mentorName = _binding.mentorName
+        mentorType = _binding.mentorDescription
+        userEmail = _binding.profileUserEmail
+        userPhoneNumber = _binding.profileUserPhone
+        officeLocation = _binding.officeLocation
+    }
 
+    private fun initializeListeners() {
         signOutButton.setOnClickListener {
-            // delete deadline from shared preferences
-            // navigate to login fragment
             val sharedPref =
                 activity?.getSharedPreferences("P3Track", AppCompatActivity.MODE_PRIVATE)
             val editor = sharedPref?.edit()
@@ -42,15 +110,5 @@ class ProfileFragment : Fragment() {
 
             findNavController().navigate(R.id.action_profileFragment_to_loginFragment)
         }
-
-    }
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        Log.d("ProfileFragment", "onCreateView")
-        _binding = FragmentProfileBinding.inflate(inflater, container, false)
-        return _binding.root
     }
 }

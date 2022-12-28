@@ -16,6 +16,7 @@ class GlobalViewModel(application: Application) : AndroidViewModel(application) 
     private val userViewModel: UserViewModel by lazy { UserViewModel(application) }
     private val departmentViewModel: DepartmentViewModel by lazy { DepartmentViewModel(application) }
     private val taskViewModel: TaskViewModel by lazy { TaskViewModel(application) }
+    private var currentUser: UserModel? = null
 
     val requestState: MutableLiveData<RequestState> = MutableLiveData()
 
@@ -125,4 +126,24 @@ class GlobalViewModel(application: Application) : AndroidViewModel(application) 
     fun getDepartmentList() = departmentViewModel.departmentList
 
     fun getTaskList() = _taskList
+
+    fun getLoggedInUser() {
+        requestState.value = RequestState.LOADING
+        val sharedPref = getApplication<Application>().getSharedPreferences("P3Track", 0)
+        val token = sharedPref.getString("token", null)
+
+       userViewModel.getMyUser(token!!)
+
+        userViewModel.requestState.observeForever {
+            if (it == RequestState.SUCCESS) {
+                val userTemp = userViewModel.getCurrentUser()!!
+                currentUser = UserModel(userTemp.ID, userTemp.last_name, userTemp.first_name,
+                   userTemp.email, UserType.values()[userTemp.type], userTemp.location,
+                   userTemp.phone_number, userTemp.department_id, userTemp.image)
+                requestState.value = RequestState.SUCCESS
+            }
+        }
+    }
+
+    fun getCurrentUser() = currentUser
 }

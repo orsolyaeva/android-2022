@@ -6,7 +6,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.nyorsi.p3track.api.queryModels.users.GetUsersResponse
 import com.nyorsi.p3track.models.UserModel
+import com.nyorsi.p3track.models.UserType
 import com.nyorsi.p3track.repositories.UserRepository
 import com.nyorsi.p3track.utils.RequestState
 import kotlinx.coroutines.launch
@@ -14,6 +16,7 @@ import kotlinx.coroutines.launch
 class UserViewModel (application: Application) : AndroidViewModel(application) {
     val requestState: MutableLiveData<RequestState> = MutableLiveData()
     private val userRepository = UserRepository()
+    private var currentUser: GetUsersResponse? = null
     var userList: MutableLiveData<List<UserModel>> = MutableLiveData()
 
     init {
@@ -30,6 +33,8 @@ class UserViewModel (application: Application) : AndroidViewModel(application) {
             try {
                 val response = userRepository.getMyUser(token)
                 if(response.isSuccessful) {
+                    val user = response.body()
+                    currentUser = user
                     requestState.value = RequestState.SUCCESS
                 } else {
                     requestState.value = RequestState.INVALID_CREDENTIALS
@@ -63,7 +68,7 @@ class UserViewModel (application: Application) : AndroidViewModel(application) {
                                     user.last_name,
                                     user.first_name,
                                     user.email,
-                                    user.type,
+                                    UserType.values()[user.type],
                                     user.location,
                                     user.phone_number,
                                     user.department_id,
@@ -93,5 +98,9 @@ class UserViewModel (application: Application) : AndroidViewModel(application) {
             }
         }
         return null
+    }
+
+    fun getCurrentUser(): GetUsersResponse? {
+        return currentUser
     }
 }

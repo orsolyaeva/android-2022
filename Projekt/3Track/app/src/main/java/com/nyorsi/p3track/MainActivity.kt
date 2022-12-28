@@ -6,12 +6,17 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import com.google.android.material.navigation.NavigationBarView
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import com.nyorsi.p3track.models.UserModel
 import com.nyorsi.p3track.utils.RequestState
+import com.nyorsi.p3track.viewModels.GlobalViewModel
 import com.nyorsi.p3track.viewModels.UserViewModel
 
 class MainActivity : AppCompatActivity() {
     private lateinit var navigationBarView: NavigationBarView
     private lateinit var userViewModel: UserViewModel
+    private lateinit var globalViewModel: GlobalViewModel
     private var checkedUser = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -25,6 +30,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         navigationBarView = findViewById(R.id.bottom_navigation)
+        globalViewModel = ViewModelProvider(this)[GlobalViewModel::class.java]
 
         navigationBarView.setOnItemSelectedListener { item ->
             when(item.itemId) {
@@ -38,7 +44,15 @@ class MainActivity : AppCompatActivity() {
                     // Respond to navigation item 2 click
                 }
                 R.id.item_profile -> {
-                    findNavController(R.id.nav_host_fragment).navigate(R.id.profileFragment)
+                    globalViewModel.getLoggedInUser()
+                    globalViewModel.requestState.observe(this) {
+                        if (it == RequestState.SUCCESS) {
+                            val parsedValue = Gson().toJson(globalViewModel.getCurrentUser()!!, object: TypeToken<UserModel>() {}.type)
+                            findNavController(R.id.nav_host_fragment).navigate(R.id.profileFragment, Bundle().apply {
+                                putString("loggedInUser", parsedValue)
+                            })
+                        }
+                    }
                 }
             }
             true
