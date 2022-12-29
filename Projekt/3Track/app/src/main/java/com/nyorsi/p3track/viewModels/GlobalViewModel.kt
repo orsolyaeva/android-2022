@@ -96,7 +96,7 @@ class GlobalViewModel(application: Application) : AndroidViewModel(application) 
                             if(task.priority == 0) TaskPriority.LOW else if(task.priority < 4) TaskPriority.MEDIUM else TaskPriority.HIGH,
                             task.deadline, department,
                             if(task.status < 0) TaskStatus.BLOCKED else if(task.status < 3) TaskStatus.values()[task.status] else TaskStatus.NEW,
-                            if(task.progress!! > 100) 100 else task.progress)
+                            task.progress)
                     )
 //                    Log.d(TAG, "taskList: ${_taskList.value}")
                 }

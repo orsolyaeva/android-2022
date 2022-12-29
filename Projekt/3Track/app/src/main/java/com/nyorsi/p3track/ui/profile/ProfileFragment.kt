@@ -65,8 +65,8 @@ class ProfileFragment : Fragment() {
         }
 
         userEmail.text = currentUser.email
-        userPhoneNumber.text = currentUser.phoneNumber ?: "No phone number provided"
-        officeLocation.text = currentUser.location ?: "No office location provided"
+        userPhoneNumber.text = ("Phone number: " + currentUser.phoneNumber) ?: "No phone number provided"
+        officeLocation.text = ("Office location: " + currentUser.location) ?: "No office location provided"
     }
 
     override fun onCreateView(

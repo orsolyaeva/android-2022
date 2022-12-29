@@ -17,9 +17,10 @@
         android:text="Sign out"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.506"
+        app:layout_constraintHorizontal_bias="0.519"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/officeLocation" />
+        app:layout_constraintTop_toBottomOf="@+id/officeLocation"
+        app:layout_constraintVertical_bias="0.265" />
 
     <androidx.cardview.widget.CardView
         android:id="@+id/profilePictureCV"
@@ -168,6 +169,7 @@
         android:id="@+id/profileUserEmail"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="2dp"
         android:layout_marginTop="16dp"
         android:text="TextView"
         app:layout_constraintEnd_toEndOf="parent"
@@ -179,6 +181,7 @@
         android:id="@+id/profileUserPhone"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="2dp"
         android:layout_marginTop="20dp"
         android:text="TextView"
         app:layout_constraintEnd_toEndOf="parent"
