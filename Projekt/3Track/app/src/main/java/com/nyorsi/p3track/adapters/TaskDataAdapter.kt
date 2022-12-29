@@ -77,27 +77,33 @@ class TaskDataAdapter(
                     " " + currentItem.assignedTo?.lastName + "</b>"
             holder.taskAssignee.text = HtmlCompat.fromHtml(text, HtmlCompat.FROM_HTML_MODE_LEGACY)
         } else {
-            holder.taskAssignee.text = "Assignee: N/A"
+            holder.taskAssignee.text = HtmlCompat.fromHtml("Assignee: <b>No user assigned</b>", HtmlCompat.FROM_HTML_MODE_LEGACY)
         }
 
         holder.taskTag.setPadding(20, 10, 20, 10)
         holder.taskTag.setTextColor("#FFFFFF".toColorInt())
 
+        val taskCardLayout = holder.itemView.findViewById<View>(R.id.taskCardLayout)
+
         when(currentItem.status) {
             TaskStatus.NEW -> {
                 holder.taskTag.text = "New"
+                taskCardLayout.setBackgroundColor("#f5edf7".toColorInt())
                 holder.taskTag.background.setTint("#dca0f2".toColorInt())
             }
            TaskStatus.IN_PROGRESS -> {
                 holder.taskTag.text = "In progress"
+                taskCardLayout.setBackgroundColor("#ffffff".toColorInt())
                 holder.taskTag.background.setTint("#88b6f2".toColorInt())
             }
             TaskStatus.BLOCKED -> {
                 holder.taskTag.text = "Blocked"
+                taskCardLayout.setBackgroundColor("#ffffff".toColorInt())
                 holder.taskTag.background.setTint("#fc7d77".toColorInt())
             }
             TaskStatus.DONE -> {
                 holder.taskTag.text = "Done"
+                taskCardLayout.setBackgroundColor("#ffffff".toColorInt())
                 holder.taskTag.background.setTint("#85e075".toColorInt())
             }
         }
@@ -128,7 +134,11 @@ class TaskDataAdapter(
             }
         }
 
-        holder.taskDescription.text = currentItem.description
+        if (holder.taskDescription.text.length > 200) {
+            holder.taskDescription.text = holder.taskDescription.text.substring(0, 300) + "..."
+        } else {
+            holder.taskDescription.text = currentItem.description
+        }
 
         if(currentItem.progress != null) {
             holder.taskProgress.text = currentItem.progress.toString() + "% Done"

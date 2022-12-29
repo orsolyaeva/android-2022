@@ -1,7 +1,6 @@
 package com.nyorsi.p3track.ui.profile
 
 import android.annotation.SuppressLint
-import android.media.Image
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -12,7 +11,6 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.google.gson.Gson
@@ -21,9 +19,6 @@ import com.nyorsi.p3track.R
 import com.nyorsi.p3track.databinding.FragmentProfileBinding
 import com.nyorsi.p3track.models.UserModel
 import com.nyorsi.p3track.models.UserType
-import com.nyorsi.p3track.utils.RequestState
-import com.nyorsi.p3track.viewModels.GlobalViewModel
-import org.w3c.dom.Text
 
 class ProfileFragment : Fragment() {
     private lateinit var signOutButton: Button

@@ -2,10 +2,12 @@ package com.nyorsi.p3track.viewModels
 
 import android.app.Application
 import android.util.Log
+import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.nyorsi.p3track.MainActivity
 import com.nyorsi.p3track.models.*
 import com.nyorsi.p3track.utils.RequestState
 import kotlinx.coroutines.launch
@@ -94,7 +96,7 @@ class GlobalViewModel(application: Application) : AndroidViewModel(application) 
                             if(task.priority == 0) TaskPriority.LOW else if(task.priority < 4) TaskPriority.MEDIUM else TaskPriority.HIGH,
                             task.deadline, department,
                             if(task.status < 0) TaskStatus.BLOCKED else if(task.status < 3) TaskStatus.values()[task.status] else TaskStatus.NEW,
-                            task.progress)
+                            if(task.progress!! > 100) 100 else task.progress)
                     )
 //                    Log.d(TAG, "taskList: ${_taskList.value}")
                 }

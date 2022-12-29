@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.core.graphics.toColor
 import androidx.core.graphics.toColorInt
 import androidx.core.text.HtmlCompat
 import androidx.recyclerview.widget.RecyclerView
@@ -51,7 +52,7 @@ class ActivityDataAdapter (
         return DataViewHolder(activityView)
     }
 
-    @SuppressLint("SetTextI18n", "SimpleDateFormat")
+    @SuppressLint("SetTextI18n", "SimpleDateFormat", "ResourceAsColor")
     override fun onBindViewHolder(holder: DataViewHolder, position: Int) {
         val currentItem = list[position]
         holder.activityType.text = currentItem.activityType.toString().lowercase()
@@ -125,6 +126,7 @@ class ActivityDataAdapter (
                         LinearLayout.LayoutParams.WRAP_CONTENT
                     )
                     params.setMargins(16, 16, 0, 0)
+                    holder.activityContent.setPadding(16, 16, 16, 16)
 
                     // set layout background color
                     holder.activityContent.setBackgroundColor("#EBF0FB".toColorInt())
@@ -139,38 +141,43 @@ class ActivityDataAdapter (
                     taskTitle.setTypeface(null, android.graphics.Typeface.BOLD)
                     taskTitle.layoutParams = params
                     taskTitle.textSize = 13f
+                    taskTitle.setTextColor("#062029".toColorInt())
                     holder.activityContent.addView(taskTitle)
 
-                    val taskDescription = TextView(holder.activityContent.context)
-                    taskDescription.text = task.description
-                    taskDescription.textSize = 13f
-                    taskDescription.layoutParams = params
-                    taskDescription.setPadding(0, 0, 0, 20)
-                    holder.activityContent.addView(taskDescription)
+//                    val taskDescription = TextView(holder.activityContent.context)
+//                    taskDescription.text = task.description
+//                    taskDescription.textSize = 13f
+//                    taskDescription.layoutParams = params
+//                    taskDescription.setPadding(0, 0, 0, 20)
+//                    holder.activityContent.addView(taskDescription)
 
                     val taskDeadline = TextView(holder.activityContent.context)
                     val deadline = Date(task.deadline * 1000)
                     val deadlineFormat = java.text.SimpleDateFormat("yyyy-MM-dd EEE HH:mm")
                     val deadlineFormatted = deadlineFormat.format(deadline)
-                    taskDeadline.text = "Deadline: $deadlineFormatted"
+                    taskDeadline.text = HtmlCompat.fromHtml("Deadline: <b>$deadlineFormatted</b>", HtmlCompat.FROM_HTML_MODE_LEGACY)
                     taskDeadline.textSize = 13f
                     taskDeadline.layoutParams = params
+                    taskDeadline.setTextColor("#5a7078".toColorInt())
                     holder.activityContent.addView(taskDeadline)
 
                     val createdBy = TextView(holder.activityContent.context)
-                    createdBy.text = "Created by: " + currentItem.createdByUser?.firstName + " " + currentItem.createdByUser?.lastName
+                    createdBy.text = HtmlCompat.fromHtml("Created by: <b>" + currentItem.createdByUser?.firstName + " " + currentItem.createdByUser?.lastName + "</b>", HtmlCompat.FROM_HTML_MODE_LEGACY)
                     createdBy.textSize = 13f
                     createdBy.layoutParams = params
+                    createdBy.setTextColor("#5a7078".toColorInt())
                     holder.activityContent.addView(createdBy)
 
                     val asssignee = TextView(holder.activityContent.context)
-                    asssignee.text = "Assignee: " + if (task.assignedTo != null) {
-                        task.assignedTo?.firstName + " " + task.assignedTo?.lastName
+                    asssignee.text = "Assignee: <b>" + if (task.assignedTo != null) {
+                        task.assignedTo?.firstName + " " + task.assignedTo?.lastName + "</b>"
                     } else {
-                        "Unknown User"
+                        "<b> Unknown User </b>"
                     }
+                    asssignee.text = HtmlCompat.fromHtml(asssignee.text.toString(), HtmlCompat.FROM_HTML_MODE_LEGACY)
                     asssignee.textSize = 13f
                     asssignee.layoutParams = params
+                    asssignee.setTextColor("#5a7078".toColorInt())
                     holder.activityContent.addView(asssignee)
                 }
             }

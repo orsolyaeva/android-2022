@@ -1,6 +1,7 @@
 package com.nyorsi.p3track.ui.activities
 
 import android.os.Bundle
+import android.text.Html
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -50,6 +51,17 @@ class ActivityFragment : Fragment(), ActivityDataAdapter.OnItemClickListener {
         val token = sharedPref?.getString("token", null)
 
         _binding = FragmentActvitiesBinding.inflate(inflater, container, false)
+        (activity as AppCompatActivity?)!!.supportActionBar!!.show()
+
+        // check if the last fragment transition was the login fragment
+        // if so, then we need to update the toke
+
+//        val fragmentManager = getFragmentManager()
+//        val counter = fragmentManager?.backStackEntryCount
+//        Log.d(TAG, "onCreateViewFM: ${fragmentManager?.getBackStackEntryAt(counter!! - 2)?.name}")
+
+//        (activity as AppCompatActivity?)!!.supportActionBar!!.title = "Activities"
+//        (activity as AppCompatActivity?)!!.supportActionBar!!.setTitle(Html.fromHtml("<font color=\"black\">" + "Activities" + "</font>"));
 
         recyclerView = binding.recyclerView
         dataAdapter = ActivityDataAdapter(ArrayList(), this)

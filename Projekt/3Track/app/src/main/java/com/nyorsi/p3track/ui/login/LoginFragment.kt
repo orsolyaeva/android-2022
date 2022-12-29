@@ -42,6 +42,7 @@ class LoginFragment : Fragment() {
     ): View {
         loginViewModel = ViewModelProvider(this)[LoginViewModel::class.java]
         _binding = FragmentLoginBinding.inflate(inflater, container, false)
+        (activity as AppCompatActivity?)!!.supportActionBar!!.hide()
         // hide bottom navigation bar from login fragment
         (activity as AppCompatActivity?)!!.findViewById<BottomNavigationView>(R.id.bottom_navigation).visibility = View.GONE
         return binding.root
@@ -54,13 +55,10 @@ class LoginFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        // hide the action bar
-        (activity as AppCompatActivity?)!!.supportActionBar!!.hide()
     }
 
     override fun onStop() {
         super.onStop()
-        (activity as AppCompatActivity?)!!.supportActionBar!!.show()
     }
 
     private fun initializeViews() {
