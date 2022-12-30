@@ -42,10 +42,18 @@
         <action
             android:id="@+id/action_myTasksFragment_to_taskDescriptionFragment"
             app:destination="@id/taskDescriptionFragment" />
+        <action
+            android:id="@+id/action_myTasksFragment_to_createTaskFragment"
+            app:destination="@id/createTaskFragment" />
     </fragment>
     <fragment
         android:id="@+id/taskDescriptionFragment"
         android:name="com.nyorsi.p3track.ui.tasks.TaskDescriptionFragment"
         android:label="fragment_task_description"
         tools:layout="@layout/fragment_task_description" />
+    <fragment
+        android:id="@+id/createTaskFragment"
+        android:name="com.nyorsi.p3track.ui.tasks.CreateTaskFragment"
+        android:label="fragment_create_task"
+        tools:layout="@layout/fragment_create_task" />
 </navigation>

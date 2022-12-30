@@ -89,21 +89,25 @@ class TaskDataAdapter(
             TaskStatus.NEW -> {
                 holder.taskTag.text = "New"
                 taskCardLayout.setBackgroundColor("#f5edf7".toColorInt())
+                holder.progressBar.progressTintList = "#dca0f2".toColorInt().let { android.content.res.ColorStateList.valueOf(it) }
                 holder.taskTag.background.setTint("#dca0f2".toColorInt())
             }
            TaskStatus.IN_PROGRESS -> {
                 holder.taskTag.text = "In progress"
                 taskCardLayout.setBackgroundColor("#ffffff".toColorInt())
+               holder.progressBar.progressTintList = "#88b6f2".toColorInt().let { android.content.res.ColorStateList.valueOf(it) }
                 holder.taskTag.background.setTint("#88b6f2".toColorInt())
             }
             TaskStatus.BLOCKED -> {
                 holder.taskTag.text = "Blocked"
                 taskCardLayout.setBackgroundColor("#ffffff".toColorInt())
+                holder.progressBar.progressTintList = "#fc7d77".toColorInt().let { android.content.res.ColorStateList.valueOf(it) }
                 holder.taskTag.background.setTint("#fc7d77".toColorInt())
             }
             TaskStatus.DONE -> {
                 holder.taskTag.text = "Done"
                 taskCardLayout.setBackgroundColor("#ffffff".toColorInt())
+                holder.progressBar.progressTintList = "#85e075".toColorInt().let { android.content.res.ColorStateList.valueOf(it) }
                 holder.taskTag.background.setTint("#85e075".toColorInt())
             }
         }

@@ -3,17 +3,18 @@ package com.nyorsi.p3track.ui.tasks
 import android.annotation.SuppressLint
 import android.graphics.Typeface
 import android.os.Bundle
+import android.view.*
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.ProgressBar
 import android.widget.Spinner
 import android.widget.TextView
 import androidx.core.graphics.toColorInt
 import androidx.core.text.HtmlCompat
+import androidx.core.view.MenuHost
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.nyorsi.p3track.R
@@ -49,6 +50,21 @@ class TaskDescriptionFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        val menuHost: MenuHost = requireActivity()
+        menuHost.addMenuProvider(object: MenuProvider {
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                menu.findItem(R.id.add_new_task).isVisible = false
+            }
+
+            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                return false
+            }
+        })
     }
 
     @SuppressLint("SetTextI18n")
@@ -98,6 +114,27 @@ class TaskDescriptionFragment : Fragment() {
         ) }
         adapter?.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         taskTagSpinner.adapter = adapter
+
+        // get current task status and set spinner to that
+        val currentStatus = currentItem?.status?.name?.lowercase()
+        val spinnerPosition = adapter?.getPosition(currentStatus)
+        taskTagSpinner.setSelection(spinnerPosition ?: 0)
+
+        when(currentItem?.status) {
+            TaskStatus.NEW -> {
+                taskProgressBar.progressTintList = "#dca0f2".toColorInt().let { android.content.res.ColorStateList.valueOf(it) }
+            }
+            TaskStatus.IN_PROGRESS -> {
+                taskProgressBar.progressTintList = "#88b6f2".toColorInt().let { android.content.res.ColorStateList.valueOf(it) }
+            }
+            TaskStatus.BLOCKED -> {
+                taskProgressBar.progressTintList = "#fc7d77".toColorInt().let { android.content.res.ColorStateList.valueOf(it) }
+            }
+            TaskStatus.DONE -> {
+                taskProgressBar.progressTintList = "#85e075".toColorInt().let { android.content.res.ColorStateList.valueOf(it) }
+            }
+            else -> {}
+        }
 
         val deadline = currentItem?.deadline
         if (deadline != 0L) {

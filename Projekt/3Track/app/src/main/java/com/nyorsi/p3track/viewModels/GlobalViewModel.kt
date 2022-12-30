@@ -93,13 +93,17 @@ class GlobalViewModel(application: Application) : AndroidViewModel(application) 
                     _taskList.value = _taskList.value?.plus(
                         TaskModel( task.ID,
                             task.title, task.description, task.created_time, createdByUser, assignedToUser,
-                            if(task.priority == 0) TaskPriority.LOW else if(task.priority < 4) TaskPriority.MEDIUM else TaskPriority.HIGH,
+                            if(task.priority == 0) TaskPriority.LOW else if(task.priority < 2) TaskPriority.MEDIUM else TaskPriority.HIGH,
                             task.deadline, department,
-                            if(task.status < 0) TaskStatus.BLOCKED else if(task.status < 3) TaskStatus.values()[task.status] else TaskStatus.NEW,
+                            if(task.status < 0) TaskStatus.BLOCKED else if(task.status < 4) TaskStatus.values()[task.status] else TaskStatus.NEW,
                             task.progress)
                     )
+
+                    Log.d(TAG, "loadActivities: ${_taskList.value}")
 //                    Log.d(TAG, "taskList: ${_taskList.value}")
                 }
+
+                _taskList.value = _taskList.value?.sortedBy { task -> task.createdTime }
 
                 Log.d(TAG, "taskList.size: ${_taskList.value?.size}")
 
@@ -112,6 +116,8 @@ class GlobalViewModel(application: Application) : AndroidViewModel(application) 
                         user, activity.created_time, activity.sub_ID,
                         subUser, activity.note, activity.progress,))
                 }
+
+                _activityList.value = _activityList.value?.sortedBy { it.createdTime }
 
                 requestState.value = RequestState.SUCCESS
 
@@ -148,4 +154,34 @@ class GlobalViewModel(application: Application) : AndroidViewModel(application) 
     }
 
     fun getCurrentUser() = currentUser
+
+    fun loadTaskCreateData() {
+        val liveDataMerger = MediatorLiveData<Int>()
+        requestState.value = RequestState.LOADING
+
+        userViewModel.getUsers()
+        departmentViewModel.getDepartments()
+
+        liveDataMerger.value = 0
+
+        liveDataMerger.addSource(userViewModel.requestState) {
+            if (it == RequestState.SUCCESS) {
+                liveDataMerger.value = liveDataMerger.value?.plus(1)
+                Log.d(TAG, "loadUsers: ${userViewModel.userList.value}")
+            }
+        }
+
+        liveDataMerger.addSource(departmentViewModel.getDepartmentsState) {
+            if (it == RequestState.SUCCESS) {
+                liveDataMerger.value = liveDataMerger.value?.plus(1)
+                Log.d(TAG, "loadDepartments: ${liveDataMerger.value}")
+            }
+        }
+
+        liveDataMerger.observeForever {
+            if (it == 2) {
+                requestState.value = RequestState.SUCCESS
+            }
+        }
+    }
 }

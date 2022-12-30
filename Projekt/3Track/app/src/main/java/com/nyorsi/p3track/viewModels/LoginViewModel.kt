@@ -33,8 +33,10 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
                     requestState.value = RequestState.SUCCESS
                     val deadline = response.body()!!.deadline
                     val token = response.body()!!.token
+                    val userID = response.body()!!.userId
                     Log.d(TAG, "login: $deadline")
                     Log.d(TAG, "login: $token")
+                    Log.d(TAG, "login: $userID")
                     val sharedPref = getApplication<Application>().getSharedPreferences("P3Track", AppCompatActivity.MODE_PRIVATE)
                     with(sharedPref.edit()) {
                         putString("deadline", deadline.toString())
@@ -42,6 +44,10 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
                     }
                     with(sharedPref.edit()) {
                         putString("token", token)
+                        apply()
+                    }
+                    with(sharedPref.edit()) {
+                        putString("userID", userID.toString())
                         apply()
                     }
                 } else {

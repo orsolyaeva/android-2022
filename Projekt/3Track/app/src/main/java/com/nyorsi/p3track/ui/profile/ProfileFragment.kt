@@ -3,14 +3,15 @@ package com.nyorsi.p3track.ui.profile
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
+import android.view.*
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.text.HtmlCompat
+import androidx.core.view.MenuHost
+import androidx.core.view.MenuProvider
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.google.gson.Gson
@@ -25,9 +26,6 @@ class ProfileFragment : Fragment() {
     private lateinit var profilePicture: ImageView
     private lateinit var userName: TextView
     private lateinit var userType: TextView
-    private lateinit var mentorPicture: ImageView
-    private lateinit var mentorName: TextView
-    private lateinit var mentorType: TextView
     private lateinit var userEmail: TextView
     private lateinit var userPhoneNumber: TextView
     private lateinit var officeLocation: TextView
@@ -42,6 +40,18 @@ class ProfileFragment : Fragment() {
     @SuppressLint("SetTextI18n")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        val menuHost: MenuHost = requireActivity()
+        menuHost.addMenuProvider(object: MenuProvider {
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                menu.findItem(R.id.add_new_task).isVisible = false
+            }
+
+            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                return false
+            }
+        })
+
         initializeViews()
         initializeListeners()
 
@@ -65,8 +75,8 @@ class ProfileFragment : Fragment() {
         }
 
         userEmail.text = currentUser.email
-        userPhoneNumber.text = ("Phone number: " + currentUser.phoneNumber) ?: "No phone number provided"
-        officeLocation.text = ("Office location: " + currentUser.location) ?: "No office location provided"
+        userPhoneNumber.text = HtmlCompat.fromHtml("Phone number: <b>" + (currentUser.phoneNumber ?: "No phone number provided") + "</b>", HtmlCompat.FROM_HTML_MODE_LEGACY)
+        officeLocation.text = HtmlCompat.fromHtml("Office location: <b>" +  (currentUser.location ?: "No office location provided") + "</b>", HtmlCompat.FROM_HTML_MODE_LEGACY)
     }
 
     override fun onCreateView(
@@ -83,9 +93,6 @@ class ProfileFragment : Fragment() {
         profilePicture = _binding.profilePicture
         userName = _binding.profileUserName
         userType = _binding.profileUserType
-        mentorPicture = _binding.mentorPicture
-        mentorName = _binding.mentorName
-        mentorType = _binding.mentorDescription
         userEmail = _binding.profileUserEmail
         userPhoneNumber = _binding.profileUserPhone
         officeLocation = _binding.officeLocation
@@ -101,6 +108,9 @@ class ProfileFragment : Fragment() {
             editor?.apply()
 
             editor?.remove("token")
+            editor?.apply()
+
+            editor?.remove("userID")
             editor?.apply()
 
             findNavController().navigate(R.id.action_profileFragment_to_loginFragment)

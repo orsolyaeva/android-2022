@@ -7,6 +7,7 @@ import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.Menu
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.RequiresApi
@@ -77,6 +78,10 @@ class MainActivity : AppCompatActivity() {
                     globalViewModel.getLoggedInUser()
                     globalViewModel.requestState.observe(this) {
                         if (it == RequestState.SUCCESS) {
+                            val image = globalViewModel.getCurrentUser()?.image
+                            if (image != null) {
+                                Glide.with(this).load(image).into(userProfile)
+                            }
                             val parsedValue = Gson().toJson(globalViewModel.getCurrentUser()!!, object: TypeToken<UserModel>() {}.type)
                             findNavController(R.id.nav_host_fragment).navigate(R.id.profileFragment, Bundle().apply {
                                 putString("loggedInUser", parsedValue)
@@ -113,6 +118,7 @@ class MainActivity : AppCompatActivity() {
                     }
                     else -> {
                         checkedUser = true
+                        title.text = "Activities"
                         findNavController(R.id.nav_host_fragment).navigate(R.id.loginFragment)
                     }
                 }
@@ -120,5 +126,10 @@ class MainActivity : AppCompatActivity() {
         } else {
             checkedUser = true
         }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.toolbar_menu, menu)
+        return true
     }
 }
