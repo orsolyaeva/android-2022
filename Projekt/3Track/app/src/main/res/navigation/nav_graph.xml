@@ -24,6 +24,9 @@
         <action
             android:id="@+id/action_actvitiesFragment_to_myTasksFragment"
             app:destination="@id/myTasksFragment" />
+        <action
+            android:id="@+id/action_actvitiesFragment_to_myGroupsFragment"
+            app:destination="@id/myGroupsFragment" />
     </fragment>
     <fragment
         android:id="@+id/profileFragment"
@@ -50,10 +53,34 @@
         android:id="@+id/taskDescriptionFragment"
         android:name="com.nyorsi.p3track.ui.tasks.TaskDescriptionFragment"
         android:label="fragment_task_description"
-        tools:layout="@layout/fragment_task_description" />
+        tools:layout="@layout/fragment_task_description" >
+        <action
+            android:id="@+id/action_taskDescriptionFragment_to_editTaskFragment"
+            app:destination="@id/editTaskFragment" />
+        <action
+            android:id="@+id/action_taskDescriptionFragment_to_myTasksFragment"
+            app:destination="@id/myTasksFragment" />
+    </fragment>
     <fragment
         android:id="@+id/createTaskFragment"
         android:name="com.nyorsi.p3track.ui.tasks.CreateTaskFragment"
         android:label="fragment_create_task"
-        tools:layout="@layout/fragment_create_task" />
+        tools:layout="@layout/fragment_create_task" >
+        <action
+            android:id="@+id/action_createTaskFragment_to_myTasksFragment"
+            app:destination="@id/myTasksFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/editTaskFragment"
+        android:name="com.nyorsi.p3track.ui.tasks.EditTaskFragment"
+        android:label="fragment_edit_task"
+        tools:layout="@layout/fragment_edit_task" >
+        <action
+            android:id="@+id/action_editTaskFragment_to_taskDescriptionFragment"
+            app:destination="@id/taskDescriptionFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/myGroupsFragment"
+        android:name="com.nyorsi.p3track.ui.groups.MyGroupsFragment"
+        android:label="MyGroupsFragment" />
 </navigation>

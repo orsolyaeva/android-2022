@@ -3,6 +3,9 @@ package com.nyorsi.p3track.ui.tasks
 import android.os.Bundle
 import android.util.Log
 import android.view.*
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import android.widget.Spinner
 import androidx.fragment.app.Fragment
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.MenuHost
@@ -26,6 +29,9 @@ class MyTasksFragment : Fragment(), TaskDataAdapter.OnItemClickListener {
     private val globalViewModel: GlobalViewModel by viewModels()
     private lateinit var recyclerView: RecyclerView
     private lateinit var dataAdapter: TaskDataAdapter
+    private lateinit var taskFilter: Spinner
+
+    private var taskList: List<TaskModel> = listOf()
 
     companion object {
         const val TAG = "MyTasksFragment"
@@ -42,6 +48,7 @@ class MyTasksFragment : Fragment(), TaskDataAdapter.OnItemClickListener {
         menuHost.addMenuProvider(object: MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
                 menu.findItem(R.id.add_new_task).isVisible = true
+                menu.findItem(R.id.edit_task).isVisible = false
             }
 
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
@@ -61,6 +68,12 @@ class MyTasksFragment : Fragment(), TaskDataAdapter.OnItemClickListener {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentMyTasksBinding.inflate(inflater, container, false)
+        taskFilter = binding.taskFilter
+
+        val taskCategoryList = listOf("All", "Recently added", "Active tasks", "Completed tasks")
+        val taskAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, taskCategoryList)
+        taskAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        taskFilter.adapter = taskAdapter
 
         recyclerView = binding.recyclerView
         dataAdapter = TaskDataAdapter(ArrayList(), this)
@@ -83,16 +96,19 @@ class MyTasksFragment : Fragment(), TaskDataAdapter.OnItemClickListener {
                 Log.d(TAG, "onGetID: $userIdString")
                 if (userIdString != null) {
                     val userId = userIdString.toInt()
-                    val taskList = globalViewModel.getTaskList().value
-                    val filteredTaskList = taskList?.filter { task -> task.assignedTo?.id == userId }
+                    val taskListTemp = globalViewModel.getTaskList().value
+                    val filteredTaskList = taskListTemp?.filter { task -> task.assignedTo?.id == userId }
 
                     if (filteredTaskList != null) {
                         if(filteredTaskList.isEmpty()) {
+                            taskList = globalViewModel.getTaskList().value as List<TaskModel>
                             dataAdapter.setData(globalViewModel.getTaskList().value!! as MutableList<TaskModel>)
                         } else {
                             dataAdapter.setData(filteredTaskList as ArrayList<TaskModel>)
                         }
                     }
+
+                    onTaskFilterChanged()
                 }
 //                val taskList = globalViewModel.getTaskList().value
 //                dataAdapter.setData(globalViewModel.getTaskList().value!! as MutableList<TaskModel>)
@@ -110,5 +126,68 @@ class MyTasksFragment : Fragment(), TaskDataAdapter.OnItemClickListener {
         findNavController().navigate(R.id.taskDescriptionFragment, Bundle().apply {
             putString("currentTask", parsedValue)
         })
+    }
+
+    private fun onTaskFilterChanged() {
+        taskFilter.onItemSelectedListener = object: AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
+                val category = parent?.getItemAtPosition(position).toString()
+                Log.d(TAG, "onItemSelected: $category")
+
+                if(category == "All") {
+                    val sharedPref =
+                        activity?.getSharedPreferences("P3Track", AppCompatActivity.MODE_PRIVATE)
+                    val userIdString = sharedPref?.getString("userID", null)
+                    Log.d(TAG, "onGetID: $userIdString")
+                    if (userIdString != null) {
+                        val userId = userIdString.toInt()
+                        val filteredTaskList = taskList.filter { task -> task.assignedTo?.id == userId }
+
+                        if(filteredTaskList.isEmpty()) {
+                            dataAdapter.setData(taskList as MutableList<TaskModel>)
+                        } else {
+                            dataAdapter.setData(filteredTaskList as ArrayList<TaskModel>)
+                        }
+                    }
+                } else {
+                        when(category) {
+                        "Recently added" -> {
+                            val sortedTaskList = taskList.filter { task -> task.status.ordinal == 0 }
+                            dataAdapter.setData(sortedTaskList as ArrayList<TaskModel>)
+                        }
+                        "Active tasks" -> {
+                            val filteredTaskList = taskList.filter { task -> task.status.ordinal == 1 || task.status.ordinal == 2 }
+                            dataAdapter.setData(filteredTaskList as ArrayList<TaskModel>)
+                        }
+                        "Completed tasks" -> {
+                            val filteredTaskList = taskList.filter { task -> task.status.ordinal == 3 }
+                            dataAdapter.setData(filteredTaskList as ArrayList<TaskModel>)
+                        }
+                    }
+                }
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+                val sharedPref =
+                    activity?.getSharedPreferences("P3Track", AppCompatActivity.MODE_PRIVATE)
+                val userIdString = sharedPref?.getString("userID", null)
+                Log.d(TAG, "onGetID: $userIdString")
+                if (userIdString != null) {
+                    val userId = userIdString.toInt()
+                    val filteredTaskList = taskList.filter { task -> task.assignedTo?.id == userId }
+
+                    if(filteredTaskList.isEmpty()) {
+                        dataAdapter.setData(taskList as MutableList<TaskModel>)
+                    } else {
+                        dataAdapter.setData(filteredTaskList as ArrayList<TaskModel>)
+                    }
+                }
+            }
+        }
     }
 }

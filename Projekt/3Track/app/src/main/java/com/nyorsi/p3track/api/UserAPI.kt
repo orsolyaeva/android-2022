@@ -4,7 +4,10 @@ import com.nyorsi.p3track.api.queryModels.activities.GetActivitiesResponse
 import com.nyorsi.p3track.api.queryModels.department.GetDepartmentsResponse
 import com.nyorsi.p3track.api.queryModels.login.LoginRequest
 import com.nyorsi.p3track.api.queryModels.login.LoginResponse
+import com.nyorsi.p3track.api.queryModels.task.CreateTaskRequest
+import com.nyorsi.p3track.api.queryModels.GeneralResponse
 import com.nyorsi.p3track.api.queryModels.task.GetTasksResponse
+import com.nyorsi.p3track.api.queryModels.task.UpdateTaskRequest
 import com.nyorsi.p3track.api.queryModels.users.GetUsersResponse
 import retrofit2.Response
 import retrofit2.http.*
@@ -39,6 +42,18 @@ interface UserAPI {
     suspend fun getTasks(
         @Header("token") token: String
     ): Response<MutableList<GetTasksResponse>>
+
+    @POST("task/create")
+    suspend fun createTask(
+        @Header("token") token: String,
+        @Body createTaskRequest: CreateTaskRequest
+    ): Response<GeneralResponse>
+
+    @POST("task/update")
+    suspend fun updateTask(
+        @Header("token") token: String,
+        @Body updateTaskRequest: UpdateTaskRequest
+    ): Response<GeneralResponse>
 
     companion object {
         fun getAPI(): UserAPI {

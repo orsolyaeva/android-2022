@@ -71,7 +71,8 @@ class MainActivity : AppCompatActivity() {
                     findNavController(R.id.nav_host_fragment).navigate(R.id.myTasksFragment)
                 }
                 R.id.item_groups -> {
-                    // Respond to navigation item 2 click
+                    title.text = "My Groups"
+                    findNavController(R.id.nav_host_fragment).navigate(R.id.myGroupsFragment)
                 }
                 R.id.item_profile -> {
                     title.text = "Profile"

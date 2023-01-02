@@ -8,6 +8,8 @@ import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.nyorsi.p3track.MainActivity
+import com.nyorsi.p3track.api.queryModels.task.CreateTaskRequest
+import com.nyorsi.p3track.api.queryModels.task.UpdateTaskRequest
 import com.nyorsi.p3track.models.*
 import com.nyorsi.p3track.utils.RequestState
 import kotlinx.coroutines.launch
@@ -162,6 +164,9 @@ class GlobalViewModel(application: Application) : AndroidViewModel(application) 
         userViewModel.getUsers()
         departmentViewModel.getDepartments()
 
+        val sharedPref = getApplication<Application>().getSharedPreferences("P3Track", 0)
+        val userID = sharedPref.getString("userID", null)
+
         liveDataMerger.value = 0
 
         liveDataMerger.addSource(userViewModel.requestState) {
@@ -180,8 +185,41 @@ class GlobalViewModel(application: Application) : AndroidViewModel(application) 
 
         liveDataMerger.observeForever {
             if (it == 2) {
+                currentUser = userViewModel.userList.value?.find { user -> user.id == userID?.toInt() }!!
                 requestState.value = RequestState.SUCCESS
             }
         }
+    }
+
+    fun createTask(createTaskRequest: CreateTaskRequest) {
+        requestState.value = RequestState.LOADING
+
+        val sharedPref = getApplication<Application>().getSharedPreferences("P3Track", 0)
+        val token = sharedPref.getString("token", null)
+
+        taskViewModel.createTask(token!!, createTaskRequest)
+        taskViewModel.createTaskState.observeForever {
+            if (it == RequestState.SUCCESS) {
+                requestState.value = RequestState.SUCCESS
+            }
+        }
+    }
+
+    fun updateTask(updateTaskRequest: UpdateTaskRequest) {
+        requestState.value = RequestState.LOADING
+
+        val sharedPref = getApplication<Application>().getSharedPreferences("P3Track", 0)
+        val token = sharedPref.getString("token", null)
+
+        taskViewModel.updateTask(token!!, updateTaskRequest)
+        taskViewModel.updateTaskState.observeForever {
+            if (it == RequestState.SUCCESS) {
+                requestState.value = RequestState.SUCCESS
+            }
+        }
+    }
+
+    fun getCurrentUserDepartment(): DepartmentModel? {
+        return departmentViewModel.departmentList.value?.find { department -> department.id == currentUser?.departmentId }
     }
 }

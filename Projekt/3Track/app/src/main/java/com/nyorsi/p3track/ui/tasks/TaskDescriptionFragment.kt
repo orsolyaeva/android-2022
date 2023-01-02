@@ -3,6 +3,7 @@ package com.nyorsi.p3track.ui.tasks
 import android.annotation.SuppressLint
 import android.graphics.Typeface
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import androidx.fragment.app.Fragment
 import android.widget.ArrayAdapter
@@ -52,6 +53,7 @@ class TaskDescriptionFragment : Fragment() {
         super.onCreate(savedInstanceState)
     }
 
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -59,9 +61,20 @@ class TaskDescriptionFragment : Fragment() {
         menuHost.addMenuProvider(object: MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
                 menu.findItem(R.id.add_new_task).isVisible = false
+                menu.findItem(R.id.edit_task).isVisible = true
             }
 
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                when (menuItem.itemId) {
+                    R.id.edit_task -> {
+                        arguments?.clear()
+                        val parsedValue = Gson().toJson(currentItem!!, object: TypeToken<TaskModel>() {}.type)
+                        findNavController().navigate(R.id.editTaskFragment, Bundle().apply {
+                            putString("taskToUpdate", parsedValue)
+                        })
+                        return true
+                    }
+                }
                 return false
             }
         })

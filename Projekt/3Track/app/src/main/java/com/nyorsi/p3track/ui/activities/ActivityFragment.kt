@@ -47,6 +47,7 @@ class ActivityFragment : Fragment(), ActivityDataAdapter.OnItemClickListener {
         menuHost.addMenuProvider(object: MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
                  menu.findItem(R.id.add_new_task).isVisible = false
+                menu.findItem(R.id.edit_task).isVisible = false
             }
 
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
