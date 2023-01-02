@@ -153,11 +153,11 @@ class ProfileFragment : Fragment() {
             val newName = firstNameInput.text.toString() + " " + lastNameInput.text.toString()
 
             val updateProfileRequest = UpdateProfileRequest(
-                lastName = lastNameInput.text.toString(),
-                firstName = firstNameInput.text.toString(),
+                lastName = if(lastNameInput.text.toString() != "") lastNameInput.text.toString() else currentUser.lastName,
+                firstName = if (firstNameInput.text.toString() != "") firstNameInput.text.toString() else currentUser.firstName,
                 location = currentUser.location!!,
                 phoneNumber = currentUser.phoneNumber!!,
-                imageUrl = newImageURL
+                imageUrl = if (imageURLInput.text.toString() != "") imageURLInput.text.toString() else currentUser.image!!
             )
 
             Log.d("ProfileFragment", "updateProfileRequest: $updateProfileRequest")
@@ -170,10 +170,12 @@ class ProfileFragment : Fragment() {
                         "Profile updated successfully",
                         Snackbar.LENGTH_SHORT
                     ).show()
-                    userName.text = newName
-                    Glide.with(profilePicture.context)
-                        .load(newImageURL)
-                        .into(profilePicture)
+                    userName.text = if (newName != " ") newName else currentUser.firstName + " " + currentUser.lastName
+                    if(newImageURL != "") {
+                        Glide.with(profilePicture.context)
+                            .load(newImageURL)
+                            .into(profilePicture)
+                    }
                     saveChangesButton.isVisible = false
                     imageURLInput.isVisible = false
                     firstNameInput.isVisible = false
