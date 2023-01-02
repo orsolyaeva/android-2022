@@ -68,10 +68,21 @@ class TaskDescriptionFragment : Fragment() {
                 when (menuItem.itemId) {
                     R.id.edit_task -> {
                         arguments?.clear()
-                        val parsedValue = Gson().toJson(currentItem!!, object: TypeToken<TaskModel>() {}.type)
-                        findNavController().navigate(R.id.editTaskFragment, Bundle().apply {
-                            putString("taskToUpdate", parsedValue)
-                        })
+                        if(currentItem != null) {
+                            val parsedValue = Gson().toJson(currentItem!!, object: TypeToken<TaskModel>() {}.type)
+                            findNavController().navigate(R.id.editTaskFragment, Bundle().apply {
+                                putString("taskToUpdate", parsedValue)
+                            })
+                        } else {
+                            val parsedValueTemp = arguments?.getString("currentTask")
+                            currentItem = Gson().fromJson(parsedValueTemp, object : TypeToken<TaskModel>() {}.type)
+
+                            Log.d(TAG, "onMenuItemSelected: $currentItem")
+                            val parsedValue = Gson().toJson(currentItem!!, object: TypeToken<TaskModel>() {}.type)
+                            findNavController().navigate(R.id.editTaskFragment, Bundle().apply {
+                                putString("taskToUpdate", parsedValue)
+                            })
+                        }
                         return true
                     }
                 }

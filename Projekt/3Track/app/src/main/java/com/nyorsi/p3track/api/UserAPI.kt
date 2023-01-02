@@ -9,6 +9,7 @@ import com.nyorsi.p3track.api.queryModels.GeneralResponse
 import com.nyorsi.p3track.api.queryModels.task.GetTasksResponse
 import com.nyorsi.p3track.api.queryModels.task.UpdateTaskRequest
 import com.nyorsi.p3track.api.queryModels.users.GetUsersResponse
+import com.nyorsi.p3track.api.queryModels.users.UpdateProfileRequest
 import retrofit2.Response
 import retrofit2.http.*
 
@@ -53,6 +54,12 @@ interface UserAPI {
     suspend fun updateTask(
         @Header("token") token: String,
         @Body updateTaskRequest: UpdateTaskRequest
+    ): Response<GeneralResponse>
+
+    @POST("users/updateProfile")
+    suspend fun updateProfile(
+        @Header("token") token: String,
+        @Body updateProfileRequest: UpdateProfileRequest
     ): Response<GeneralResponse>
 
     companion object {

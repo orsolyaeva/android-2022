@@ -7,6 +7,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.nyorsi.p3track.api.queryModels.users.GetUsersResponse
+import com.nyorsi.p3track.api.queryModels.users.UpdateProfileRequest
 import com.nyorsi.p3track.models.UserModel
 import com.nyorsi.p3track.models.UserType
 import com.nyorsi.p3track.repositories.UserRepository
@@ -15,6 +16,7 @@ import kotlinx.coroutines.launch
 
 class UserViewModel (application: Application) : AndroidViewModel(application) {
     val requestState: MutableLiveData<RequestState> = MutableLiveData()
+    val updateProfileState: MutableLiveData<RequestState> = MutableLiveData()
     private val userRepository = UserRepository()
     private var currentUser: GetUsersResponse? = null
     var userList: MutableLiveData<List<UserModel>> = MutableLiveData()
@@ -149,5 +151,31 @@ class UserViewModel (application: Application) : AndroidViewModel(application) {
 
     fun getCurrentUser(): GetUsersResponse? {
         return currentUser
+    }
+
+    fun updateProfile(updateProfileRequest: UpdateProfileRequest) {
+        updateProfileState.value = RequestState.LOADING
+        viewModelScope.launch {
+            try {
+                val sharedPref = getApplication<Application>().getSharedPreferences("P3Track", AppCompatActivity.MODE_PRIVATE)
+                val token = sharedPref.getString("token", null)
+                if(token != null) {
+                    val response = userRepository.updateProfile(token, updateProfileRequest)
+                    Log.d("UserViewModel", "updateProfile: ${token}")
+                    Log.d("UserViewModel", "updateProfile: ${updateProfileRequest}")
+                    if(response.isSuccessful) {
+                        updateProfileState.value = RequestState.SUCCESS
+                    } else {
+                        updateProfileState.value = RequestState.INVALID_CREDENTIALS
+                        Log.d("UserViewModel", "update: ${response.errorBody()}")
+                        Log.d("UserViewModel", "update: ${response.code()}")
+                        Log.d("UserViewModel", "update: ${response.message()}")
+                    }
+                }
+            } catch (e: Exception) {
+                updateProfileState.value = RequestState.UNKNOWN_ERROR
+                Log.d("UserViewModel", "login: ${e.message}")
+            }
+        }
     }
 }

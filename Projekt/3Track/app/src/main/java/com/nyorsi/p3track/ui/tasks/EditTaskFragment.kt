@@ -25,6 +25,8 @@ import com.nyorsi.p3track.api.queryModels.task.UpdateTaskRequest
 import com.nyorsi.p3track.databinding.FragmentCreateTaskBinding
 import com.nyorsi.p3track.databinding.FragmentEditTaskBinding
 import com.nyorsi.p3track.models.TaskModel
+import com.nyorsi.p3track.models.TaskPriority
+import com.nyorsi.p3track.models.TaskStatus
 import com.nyorsi.p3track.models.UserType
 import com.nyorsi.p3track.utils.RequestState
 import com.nyorsi.p3track.viewModels.GlobalViewModel
@@ -234,6 +236,21 @@ class EditTaskFragment : Fragment() {
                 progress = currentItem?.progress
             )
 
+            // update current task values
+            currentItem?.title = taskName
+            currentItem?.description = taskDesc
+            currentItem?.assignedTo = globalViewModel.getUserList().value?.find { it.firstName + " " + it.lastName == assigned }
+            currentItem?.priority = TaskPriority.values()[priorityId - 1]
+            currentItem?.deadline = date.time / 1000
+            currentItem?.department = globalViewModel.getDepartmentList().value?.find { it.name == project }
+            currentItem?.status = TaskStatus.values()[currentItem?.status!!.ordinal]
+            currentItem?.progress = currentItem?.progress
+
+            val parsedValue = Gson().toJson(currentItem!!, object: TypeToken<TaskModel>() {}.type)
+            findNavController().navigate(R.id.action_editTaskFragment_to_taskDescriptionFragment,
+                Bundle().apply
+                { putString("currentTask", parsedValue) })
+
             globalViewModel.updateTask(updateRequest)
             globalViewModel.requestState.observe(viewLifecycleOwner) { state ->
                 if (state == RequestState.SUCCESS) {
@@ -266,8 +283,11 @@ class EditTaskFragment : Fragment() {
                 builder.setTitle("Exit")
                 builder.setMessage("Are you sure you want to exit? You will lose all the data you entered.")
                 builder.setPositiveButton("Yes") { _, _ ->
-                    arguments?.clear()
-                    findNavController().navigateUp()
+                    // navigate back and add bundle to the previous fragment
+                    val parsedValue = Gson().toJson(currentItem!!, object: TypeToken<TaskModel>() {}.type)
+                    findNavController().navigate(R.id.action_editTaskFragment_to_taskDescriptionFragment,
+                    Bundle().apply
+                     { putString("currentTask", parsedValue) })
                 }
                 builder.setNegativeButton("No") { _, _ -> }
                 builder.show()
