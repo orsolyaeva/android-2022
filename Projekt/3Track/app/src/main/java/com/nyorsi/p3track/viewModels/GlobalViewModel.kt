@@ -31,6 +31,34 @@ class GlobalViewModel(application: Application) : AndroidViewModel(application) 
         const val TAG = "GlobalViewModel"
     }
 
+    fun loadDepartments() {
+        requestState.value = RequestState.LOADING
+        departmentViewModel.getDepartments()
+        departmentViewModel.getDepartmentsState.observeForever {
+            if (it == RequestState.SUCCESS) {
+                requestState.value = RequestState.SUCCESS
+            } else {
+                requestState.value = RequestState.UNKNOWN_ERROR
+            }
+        }
+    }
+
+    fun loadUsersWithDepartmentId(departmentId: Int) {
+        requestState.value = RequestState.LOADING
+        userViewModel.getUsersWithDepartmentId(departmentId)
+        userViewModel.requestState.observeForever {
+            if (it == RequestState.SUCCESS) {
+                requestState.value = RequestState.SUCCESS
+            } else {
+                requestState.value = RequestState.UNKNOWN_ERROR
+            }
+        }
+    }
+
+    fun getUsersWithDepartmentId(): List<UserModel> {
+        return userViewModel.filteredUserList.value!!
+    }
+
     fun loadActivities() {
         val liveDataMerger = MediatorLiveData<Int>()
         requestState.value = RequestState.LOADING

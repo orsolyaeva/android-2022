@@ -18,6 +18,7 @@ class UserViewModel (application: Application) : AndroidViewModel(application) {
     private val userRepository = UserRepository()
     private var currentUser: GetUsersResponse? = null
     var userList: MutableLiveData<List<UserModel>> = MutableLiveData()
+    var filteredUserList: MutableLiveData<List<UserModel>> = MutableLiveData()
 
     init {
         requestState.value = RequestState.LOADING
@@ -77,6 +78,52 @@ class UserViewModel (application: Application) : AndroidViewModel(application) {
                             )
                         }
                         Log.d("UserList", "getUsers: " + userList.value.toString())
+                        requestState.value = RequestState.SUCCESS
+                        Log.d("GlobalViewModel", "user: SUCCESS")
+                    } else {
+                        requestState.value = RequestState.INVALID_CREDENTIALS
+                        Log.d(LoginViewModel.TAG, "login: ${response.errorBody()}")
+                    }
+                }
+            } catch (e: Exception) {
+                requestState.value = RequestState.UNKNOWN_ERROR
+                Log.d("UserViewModel", "getUsers: ${e.message}")
+            }
+        }
+    }
+
+    fun getUsersWithDepartmentId(departmentId: Int) {
+        requestState.value = RequestState.LOADING
+        viewModelScope.launch {
+            try {
+                val sharedPref = getApplication<Application>().getSharedPreferences(
+                    "P3Track",
+                    AppCompatActivity.MODE_PRIVATE
+                )
+                val token = sharedPref.getString("token", null)
+                if (token != null) {
+                    userList.value = listOf()
+                    filteredUserList.value = listOf()
+                    val response = userRepository.getUsers(token)
+                    if (response.isSuccessful) {
+                        val users = response.body()!!
+                        for (user in users) {
+                            userList.value = userList.value?.plus(
+                                UserModel(
+                                    user.ID,
+                                    user.last_name,
+                                    user.first_name,
+                                    user.email,
+                                    UserType.values()[user.type],
+                                    user.location,
+                                    user.phone_number,
+                                    user.department_id,
+                                    user.image
+                                )
+                            )
+                        }
+                        Log.d("UserList", "getUsers: " + userList.value.toString())
+                        filteredUserList.value = userList.value?.filter { it.departmentId == departmentId }
                         requestState.value = RequestState.SUCCESS
                         Log.d("GlobalViewModel", "user: SUCCESS")
                     } else {

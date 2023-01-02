@@ -99,7 +99,7 @@ class ActivityDataAdapter (
         }
 
         if(currentItem.activitySubType == ActivitySubType.TASK_CREATED ||
-                currentItem.activitySubType == ActivitySubType.TASK_ASSIGNED) {
+            currentItem.activitySubType == ActivitySubType.TASK_ASSIGNED) {
             currentItem.activityTypeSubId = 4
             val task = taskList.find { it.id == currentItem.activityTypeSubId }
             if (task != null) {
